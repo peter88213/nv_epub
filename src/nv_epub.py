@@ -1,8 +1,8 @@
-"""Plugin template for novelibre.
+"""An EPUB exporter plugin for novelibre.
 
 Requires Python 3.7+
 Copyright (c) Peter Triesberger
-For further information see https://github.com/peter88213/nv_plugin
+For further information see https://github.com/peter88213/nv_epub
 License: GNU GPLv3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
 
 This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@ GNU General Public License for more details.
 """
 import webbrowser
 
-from nvplugin.nvplugin_locale import _
+from nvepub.nvepub_locale import _
 # this should be the first import
 from nvlib.controller.plugin.plugin_base import PluginBase
 
@@ -26,10 +26,10 @@ class Plugin(PluginBase):
     """Template plugin class."""
     VERSION = '@release'
     API_VERSION = '5.0'
-    DESCRIPTION = 'Plugin template'
-    URL = 'https://github.com/peter88213/nv_plugin'
+    DESCRIPTION = 'EPUB exporter'
+    URL = 'https://github.com/peter88213/nv_epub'
 
-    HELP_URL = 'https://github.com/peter88213/nv_plugin/tree/main/docs/nv_plugin'
+    HELP_URL = 'https://github.com/peter88213/nv_epub/tree/main/docs/nv_epub'
 
     def install(self, model, view, controller):
         """Install the plugin.
@@ -46,7 +46,7 @@ class Plugin(PluginBase):
         #--- Configure the main menu.
 
         # Add an entry to the Help menu.
-        label = _('nv_plugin Online help')
+        label = _('nv_epub Online help')
         self._ui.helpMenu.add_command(
             label=label,
             command=self.open_help,

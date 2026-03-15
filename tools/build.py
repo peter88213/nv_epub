@@ -1,9 +1,9 @@
-"""Build the nv_plugin novelibre plugin package.
+"""Build the nv_epub novelibre plugin package.
         
 Note: VERSION must be updated manually before starting this script.
 
 Copyright (c) Peter Triesberger
-For further information see https://github.com/peter88213/nv_plugin
+For further information see https://github.com/peter88213/nv_epub
 License: GNU GPLv3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
 """
 import os
@@ -17,7 +17,7 @@ VERSION = '0.1.0'
 
 class PluginBuilder(PackageBuilder):
 
-    PRJ_NAME = 'nv_plugin'
+    PRJ_NAME = 'nv_epub'
     LOCAL_LIB = 'nvplugin'
     GERMAN_TRANSLATION = False
 

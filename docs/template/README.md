@@ -1,8 +1,8 @@
-# nv_plugin
+# nv_epub
 
 The [novelibre](https://github.com/peter88213/novelibre/) Python program helps authors organize novels.  
 
-*nv_plugin* is a plugin providing . 
+*nv_epub* is a plugin providing an EPUB exporter. 
 
 ![Screenshot](docs/Screenshots/screen01.png)
 
@@ -14,10 +14,10 @@ The [novelibre](https://github.com/peter88213/novelibre/) Python program helps a
 
 ### Default: Executable Python zip archive
 
-Download the latest release [nv_plugin_v0.99.0.pyz](https://github.com/peter88213/nv_plugin/raw/main/dist/nv_plugin_v0.99.0.pyz)
+Download the latest release [nv_epub_v0.99.0.pyz](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v0.99.0.pyz)
 
-- Launch *nv_plugin_v0.99.0.pyz* by double-clicking (Windows desktop),
-- or execute `python nv_plugin_v0.99.0.pyz` (Windows), resp. `python3 nv_plugin_v0.99.0.pyz` (Linux) on the command line.
+- Launch *nv_epub_v0.99.0.pyz* by double-clicking (Windows desktop),
+- or execute `python nv_epub_v0.99.0.pyz` (Windows), resp. `python3 nv_epub_v0.99.0.pyz` (Linux) on the command line.
 
 > [!IMPORTANT]
 > Many web browsers recognize the download as an executable file and offer to open it immediately. 
@@ -32,9 +32,9 @@ Download the latest release [nv_plugin_v0.99.0.pyz](https://github.com/peter8821
 
 ### Alternative: Zip file
 
-The package is also available in zip format: [nv_plugin_v0.99.0.zip](https://github.com/peter88213/nv_plugin/raw/main/dist/nv_plugin_v0.99.0.zip)
+The package is also available in zip format: [nv_epub_v0.99.0.zip](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v0.99.0.zip)
 
-- Extract the *nv_plugin_v0.99.0* folder from the downloaded zipfile "nv_plugin_v0.99.0.zip".
+- Extract the *nv_epub_v0.99.0* folder from the downloaded zipfile "nv_epub_v0.99.0.zip".
 - Move into this new folder and launch *setup.py* by double-clicking (Windows/Linux desktop), 
 - or execute `python setup.py` (Windows), resp. `python3 setup.py` (Linux) on the command line.
 
@@ -50,6 +50,6 @@ See the [online manual](docs/usage.md)
 
 ## License
 
-This is Open Source software, and the *nv_plugin* plugin is licensed under GPLv3. See the
+This is Open Source software, and the *nv_epub* plugin is licensed under GPLv3. See the
 [GNU General Public License website](https://www.gnu.org/licenses/gpl-3.0.en.html) for more
-details, or consult the [LICENSE](https://github.com/peter88213/nv_plugin/blob/main/LICENSE) file.
+details, or consult the [LICENSE](https://github.com/peter88213/nv_epub/blob/main/LICENSE) file.
