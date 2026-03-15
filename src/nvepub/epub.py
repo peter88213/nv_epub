@@ -100,7 +100,7 @@ class Epub(FileExport):
                 os.chdir(self._tempDir)
                 for file in self._epubComponents:
                     epubTarget.write(file, compress_type=zipfile.ZIP_DEFLATED)
-        except NotImplementedError:
+        except:
             os.chdir(workdir)
             if backedUp:
                 os.replace(f'{self.filePath}.bak', self.filePath)

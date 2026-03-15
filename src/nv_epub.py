@@ -85,7 +85,7 @@ class Plugin(PluginBase):
 
         self._ui.restore_status()
         self._ui.propertiesView.apply_changes()
-        EpubFile = Epub(EpubPath)
+        EpubFile = Epub(EpubPath, version=self.VERSION)
         EpubFile.novel = self._mdl.novel
         try:
             EpubFile.write()
