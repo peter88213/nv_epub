@@ -57,7 +57,7 @@ class Plugin(PluginBase):
             label=label,
             command=self._export_epub,
         )
-        self._ui.exportMenu.disableOnLock.insert(label)
+        self._ui.exportMenu.disableOnClose.append(label)
 
         # Add an entry to the Help menu.
         label = _('nv_epub Online help')
@@ -67,6 +67,9 @@ class Plugin(PluginBase):
         )
 
     def _export_epub(self):
+        if self._mdl.prjFile is None:
+            return False
+
         if self._mdl.prjFile.filePath is None:
             return False
 
