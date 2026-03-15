@@ -14,6 +14,8 @@ from nvepub.nvepub_locale import _
 from nvepub.stylesheet import STYLESHEET
 from nvlib.model.file.file_export import FileExport
 from nvlib.novx_globals import norm_path
+from nvlib.novx_globals import CH_ROOT
+from string import Template
 
 
 class Epub(FileExport):
@@ -22,11 +24,6 @@ class Epub(FileExport):
     EXTENSION = '.epub'
     SUFFIX = EPUB_SUFFIX
 
-    _EPUB_COMPONENTS = [
-        'mimetype',
-        'META-INF/container.xml',
-        'OEBPS/styles/style001.css',
-    ]
     _MIMETYPE = 'application/epub+zip'
     _CONTAINER_XML = (
         '<?xml version="1.0"?>\n'
@@ -37,6 +34,30 @@ class Epub(FileExport):
         '   </rootfiles>\n'
         '</container>\n'
     )
+    _fileHeader = (
+        '<?xml version="1.0" encoding="utf-8"?>\n'
+        '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n'
+        '    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml">\n'
+        '<head>\n'
+        '<link rel="stylesheet" '
+        'href="../styles/style001.css" type="text/css" />\n'
+        '<title></title>\n'
+        '</head>\n'
+        '<body>\n'
+    )
+    _fileFooter = (
+        '</body>\n'
+        '</html>\n'
+    )
+    _partTemplate = (
+        '<h1 id="$ID">$Title</h1>\n'
+    )
+    _chapterTemplate = (
+        '<h2 id="$ID">$Title</h2>\n'
+    )
+    _sectionTemplate = '$SectionContent\n'
+    _sectionDivider = '<h4">* * *</h4>\n'
 
     def __init__(self, filePath, **kwargs):
         """Create a temporary directory for zipfile generation.
@@ -51,8 +72,13 @@ class Epub(FileExport):
         Extends the superclass constructor,        
         """
         super().__init__(filePath, **kwargs)
-        self._tempDir = tempfile.mkdtemp(suffix='.tmp', prefix='e_')
+        self._tempDir = tempfile.mkdtemp(suffix='.tmp', prefix='nv_epub_')
         self._originalPath = self._filePath
+        self._epubComponents = [
+            'mimetype',
+            'META-INF/container.xml',
+            'OEBPS/styles/style001.css',
+        ]
 
     def write(self):
         self._set_up()
@@ -72,9 +98,9 @@ class Epub(FileExport):
         try:
             with zipfile.ZipFile(self.filePath, 'w') as epubTarget:
                 os.chdir(self._tempDir)
-                for file in self._EPUB_COMPONENTS:
+                for file in self._epubComponents:
                     epubTarget.write(file, compress_type=zipfile.ZIP_DEFLATED)
-        except:
+        except NotImplementedError:
             os.chdir(workdir)
             if backedUp:
                 os.replace(f'{self.filePath}.bak', self.filePath)
@@ -88,6 +114,81 @@ class Epub(FileExport):
         self._tear_down()
         return f'{_("File written")}: "{norm_path(self.filePath)}".'
 
+    def _get_chapters(self):
+        """Process the chapters and nested sections.
+        
+        Return a list of strings, or a message, depending 
+        on the _perChapter variable.
+        Extends the superclass method for the 'document per chapter' option.
+        """
+        textDir = f'{self._tempDir}/OEBPS/text'
+        chapterNumber = 0
+        sectionNumber = 0
+        wordsTotal = 0
+        contentIndex = 0
+        for chId in self.novel.tree.get_children(CH_ROOT):
+            lines = []
+            dispNumber = 0
+            if not self.chapterFilter.accept(self, chId):
+                continue
+            # The order counts; be aware that "Todo" and "Notes" chapters are
+            # always unused.
+
+            # Has the chapter only sections not to be exported?
+            template = None
+            if self.novel.chapters[chId].chType != 0:
+                # Chapter is unused.
+                if self._unusedChapterTemplate:
+                    template = Template(self._unusedChapterTemplate)
+            elif self.novel.chapters[chId].chLevel == 1 and self._partTemplate:
+                template = Template(self._partTemplate)
+            else:
+                template = Template(self._chapterTemplate)
+                chapterNumber += 1
+                dispNumber = chapterNumber
+            if template is not None:
+                lines.append(
+                    template.safe_substitute(
+                        self._get_chapterMapping(chId, dispNumber)
+                    )
+                )
+
+            # Process sections.
+            sectionLines, sectionNumber, wordsTotal = self._get_sections(
+                chId,
+                sectionNumber,
+                wordsTotal,
+                self.novel.chapters[chId].hasEpigraph,
+                )
+            lines.extend(sectionLines)
+
+            # Process chapter ending.
+            template = None
+            if self.novel.chapters[chId].chType != 0:
+                if self._unusedChapterEndTemplate:
+                    template = Template(self._unusedChapterEndTemplate)
+            elif self._chapterEndTemplate:
+                template = Template(self._chapterEndTemplate)
+            if template is not None:
+                lines.append(
+                    template.safe_substitute(
+                        self._get_chapterMapping(chId, dispNumber)
+                    )
+                )
+            if not lines:
+                continue
+
+            text = f'{self._fileHeader}{"".join(lines)}{self._fileFooter}'
+
+            contentIndex += 1
+            textPath = (f'{textDir}/content{contentIndex:04}.xhtml')
+            self._epubComponents.append(f'OEBPS/text/content{contentIndex:04}.xhtml')
+            try:
+                with open(textPath, 'w', encoding='utf-8') as f:
+                    f.write(text)
+            except:
+                raise RuntimeError(f'Cannot write "{norm_path(textPath)}".')
+
     def _set_up(self):
         # Helper method for ZIP file generation.
         # Prepare the temporary directory containing the internal structure
@@ -99,6 +200,7 @@ class Epub(FileExport):
             self._tear_down()
             os.makedirs(f'{self._tempDir}/META-INF')
             os.makedirs(f'{self._tempDir}/OEBPS/styles')
+            os.makedirs(f'{self._tempDir}/OEBPS/text')
         except:
             raise RuntimeError(
                 f'{_("Cannot create directory")}: '
@@ -136,6 +238,9 @@ class Epub(FileExport):
                 f.write(STYLESHEET)
         except:
             raise RuntimeError(f'{_("Cannot write file")}: "style001.css"')
+
+        #--- Generate OEBPS/text/contentxxxx.xhtml.
+        self._get_chapters()
 
     def _tear_down(self):
         # Delete the temporary directory containing the
