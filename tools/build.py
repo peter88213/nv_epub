@@ -18,7 +18,7 @@ VERSION = '0.1.0'
 class PluginBuilder(PackageBuilder):
 
     PRJ_NAME = 'nv_epub'
-    LOCAL_LIB = 'nvplugin'
+    LOCAL_LIB = 'nvepub'
     GERMAN_TRANSLATION = False
 
 

@@ -20,6 +20,7 @@ import webbrowser
 from nvepub.nvepub_locale import _
 # this should be the first import
 from nvlib.controller.plugin.plugin_base import PluginBase
+from nvepub.epub import Epub
 
 
 class Plugin(PluginBase):
@@ -51,6 +52,7 @@ class Plugin(PluginBase):
             label=label,
             command=self.open_help,
         )
+        self._ctrl.docImporter.EXPORT_TARGET_CLASSES.append(Epub)
 
     def open_help(self):
         webbrowser.open(self.HELP_URL)
