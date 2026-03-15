@@ -9,7 +9,6 @@ from shutil import rmtree
 import tempfile
 import zipfile
 
-from nvepub.nvepub_globals import EPUB_SUFFIX
 from nvepub.nvepub_locale import _
 from nvepub.stylesheet import STYLESHEET
 from nvlib.model.file.file_export import FileExport
@@ -20,7 +19,6 @@ class Epub(FileExport):
 
     DESCRIPTION = 'EPUB Ebook'
     EXTENSION = '.epub'
-    SUFFIX = EPUB_SUFFIX
 
     _EPUB_COMPONENTS = [
         'mimetype',

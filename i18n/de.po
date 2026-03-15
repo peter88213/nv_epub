@@ -1,0 +1,117 @@
+# nv_epub Dictionary
+# Copyright (C) Peter Triesberger
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.1.0\n"
+"POT-Creation-Date: 2026-03-15 16:18:14\n"
+"PO-Revision-Date: 2026-03-15 16:20:01\n"
+"Last-Translator: Peter Triesberger\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: novelibre pgettext.py 1.0\n"
+
+
+msgid "1st Edit"
+msgstr "1. Überarbeitung"
+
+msgid "2nd Edit"
+msgstr "2. Überarbeitung"
+
+msgid "Action canceled by user"
+msgstr "Vorgang vom Benutzer abgebrochen"
+
+msgid "Bio"
+msgstr "Biographie"
+
+msgid "Cannot create directory"
+msgstr "Kann Verzeichnis nicht erzeugen"
+
+msgid "Cannot create file"
+msgstr "Kann Datei nicht erzeugen"
+
+msgid "Cannot overwrite file"
+msgstr "Kann Datei nicht überschreiben"
+
+msgid "Cannot write file"
+msgstr "Kann Datei nicht schreiben"
+
+msgid "Characterization"
+msgstr "Charakterisierung"
+
+msgid "Day"
+msgstr "Tag"
+
+msgid "Done"
+msgstr "Fertiggestellt"
+
+msgid "Draft"
+msgstr "Entwurf"
+
+msgid "Ebook"
+msgstr "Ebook"
+
+msgid "Ending"
+msgstr "Ende"
+
+msgid "Field"
+msgstr "Feld"
+
+msgid "File"
+msgstr "Datei"
+
+msgid "File exported"
+msgstr "Datei exportiert"
+
+msgid "File written"
+msgstr "Datei gespeichert"
+
+msgid "Goals"
+msgstr "Ziele"
+
+msgid "Major Character"
+msgstr "Hauptfigur"
+
+msgid "Minor Character"
+msgstr "Nebenfigur"
+
+msgid "Opening"
+msgstr "Eröffnung"
+
+msgid "Options"
+msgstr "Optionen"
+
+msgid "Outline"
+msgstr "Gliederung"
+
+msgid "Overwrite existing Ebook?"
+msgstr "Das vorhandene Ebook überschreiben?"
+
+msgid "Peak emotional moment"
+msgstr "Emotionaler Höhepunkt"
+
+msgid "Plot progress"
+msgstr "Handlungsfortschritt"
+
+msgid "World building"
+msgstr "Weltenbau"
+
+msgid "YYYY-MM-DD"
+msgstr "JJJJ-MM-TT"
+
+msgid "d"
+msgstr "d"
+
+msgid "h"
+msgstr "h"
+
+msgid "hh:mm"
+msgstr "hh:mm"
+
+msgid "min"
+msgstr "min"
+
+msgid "nv_epub Online help"
+msgstr "nv_epub Online-Hilfe"

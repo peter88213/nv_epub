@@ -15,11 +15,13 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 """
+import os
 import webbrowser
 
 from nvepub.nvepub_locale import _
 # this should be the first import
 from nvlib.controller.plugin.plugin_base import PluginBase
+from nvlib.novx_globals import norm_path
 from nvepub.epub import Epub
 
 
@@ -46,13 +48,50 @@ class Plugin(PluginBase):
 
         #--- Configure the main menu.
 
+        # Add an entry to the "Export" menu.
+        pos = self._ui.exportMenu.index(_('Options'))
+        self._ui.exportMenu.insert_separator(pos)
+        label = f"EPUB {_('Ebook')}"
+        self._ui.exportMenu.insert_command(
+            pos,
+            label=label,
+            command=self._export_epub,
+        )
+        self._ui.exportMenu.disableOnLock.insert(label)
+
         # Add an entry to the Help menu.
         label = _('nv_epub Online help')
         self._ui.helpMenu.add_command(
             label=label,
             command=self.open_help,
         )
-        self._ctrl.docImporter.EXPORT_TARGET_CLASSES.append(Epub)
+
+    def _export_epub(self):
+        if self._mdl.prjFile.filePath is None:
+            return False
+
+        path, __ = os.path.splitext(self._mdl.prjFile.filePath)
+        EpubPath = f'{path}{Epub.EXTENSION}'
+        if os.path.isfile(EpubPath):
+            if not self._ui.ask_yes_no(
+                message=_('Overwrite existing Ebook?'),
+                detail=norm_path(EpubPath)
+            ):
+                self._ui.set_status(f'#{_("Action canceled by user")}.')
+                return False
+
+        self._ui.restore_status()
+        self._ui.propertiesView.apply_changes()
+        EpubFile = Epub(EpubPath)
+        EpubFile.novel = self._mdl.novel
+        try:
+            EpubFile.write()
+        except TypeError as ex:
+            self._ui.set_status(f'!{str(ex)}')
+            return False
+
+        self._ui.set_status(f'{_("File exported")}: {EpubPath}')
+        return True
 
     def open_help(self):
         webbrowser.open(self.HELP_URL)

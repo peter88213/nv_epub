@@ -19,7 +19,7 @@ class PluginBuilder(PackageBuilder):
 
     PRJ_NAME = 'nv_epub'
     LOCAL_LIB = 'nvepub'
-    GERMAN_TRANSLATION = False
+    GERMAN_TRANSLATION = True
 
 
 def main():
