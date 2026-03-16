@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.1.0\n"
-"POT-Creation-Date: 2026-03-15 16:20:59\n"
+"POT-Creation-Date: 2026-03-16 20:33:37\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: LANGUAGE\n"
@@ -41,9 +41,6 @@ msgstr ""
 msgid "Characterization"
 msgstr ""
 
-msgid "Day"
-msgstr ""
-
 msgid "Done"
 msgstr ""
 
@@ -54,9 +51,6 @@ msgid "Ebook"
 msgstr ""
 
 msgid "Ending"
-msgstr ""
-
-msgid "Field"
 msgstr ""
 
 msgid "File"
@@ -96,21 +90,6 @@ msgid "Plot progress"
 msgstr ""
 
 msgid "World building"
-msgstr ""
-
-msgid "YYYY-MM-DD"
-msgstr ""
-
-msgid "d"
-msgstr ""
-
-msgid "h"
-msgstr ""
-
-msgid "hh:mm"
-msgstr ""
-
-msgid "min"
 msgstr ""
 
 msgid "nv_epub Online help"

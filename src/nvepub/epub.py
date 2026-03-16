@@ -93,7 +93,6 @@ class Epub(File):
         '    </navMap>\n'
         '</ncx>\n'
     )
-
     _fileHeader = (
         '<?xml version="1.0" encoding="utf-8"?>\n'
         '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n'
@@ -102,13 +101,17 @@ class Epub(File):
         '<head>\n'
         '<link rel="stylesheet" '
         'href="../styles/style001.css" type="text/css" />\n'
-        '<title></title>\n'
+        '<title>$Title</title>\n'
         '</head>\n'
         '<body>\n'
     )
     _fileFooter = (
         '</body>\n'
         '</html>\n'
+    )
+    _frontmatter = (
+        '<p class="title">$Title</p>\n'
+        '<p class="author">$Author</p>\n'
     )
     _partTemplate = (
         '<h1 id="$ID">$Title</h1>\n'
@@ -125,7 +128,6 @@ class Epub(File):
         self.version = kwargs['version']
         self.uuid = None
         self._tempDir = tempfile.mkdtemp(suffix='.tmp', prefix='nv_epub_')
-        self._originalPath = self._filePath
         self._epubComponents = []
         self._ChIdsByContentFileNames = []
         self._contentParser = NovxToXhtml()
@@ -184,7 +186,6 @@ class Epub(File):
         if xml:
             self._contentParser.feed(
                 text,
-                self.novel.languages,
                 append,
                 firstInChapter,
                 isEpigraph,
@@ -200,13 +201,25 @@ class Epub(File):
             text = ('</p><p>').join(lines)
 
         if isEpigraph:
-            attr = ' class="Epigraph_source"'
+            attr = ' class="epigraph_source"'
         else:
             attr = ''
         return (
             f'<p{attr}>{text}</p>'
         )
         return(text)
+
+    def _get_chapterMapping(self, chId):
+        return {
+            'ID': chId,
+            'Title': self.novel.chapters[chId].title,
+        }
+
+    def _get_frontmatterMapping(self):
+        return {
+            'Title': self.novel.title,
+            'Author': self.novel.authorName,
+        }
 
     def _get_sectionMapping(
             self,
@@ -316,44 +329,56 @@ class Epub(File):
         Write an xhtml file for each chapter.
         Return a list of file names.
         """
-        contentIndex = 0
-        ChIdsByContentFileNames = {}
 
-        for chId in self.novel.tree.get_children(CH_ROOT):
-            lines = []
-            template = None
-            if self.novel.chapters[chId].chType != 0:
-                continue
-
-            if self.novel.chapters[chId].chLevel == 1 and self._partTemplate:
-                template = Template(self._partTemplate)
-            else:
-                template = Template(self._chapterTemplate)
-            lines.append(
-                template.safe_substitute(
-                    {
-                        'ID': chId,
-                        'Title': self.novel.chapters[chId].title,
-                    }
-                )
-            )
-
-            # Process sections.
-            lines.extend(
-                self._get_sections(
-                    chId,
-                    self.novel.chapters[chId].hasEpigraph,
-                )
-            )
-            if not lines:
-                continue
-
-            text = f'{self._fileHeader}{"".join(lines)}{self._fileFooter}'
-
-            contentIndex += 1
+        def write_file(contentIndex, text, chId):
             contentFileName = f'content{contentIndex:04}.xhtml'
             ChIdsByContentFileNames[contentFileName] = chId
             self._write_file(f'OEBPS/text/{contentFileName}', text)
+
+        contentIndex = 0
+        ChIdsByContentFileNames = {}
+        contentIds = ['frontmatter']
+        contentIds.extend(self.novel.tree.get_children(CH_ROOT))
+
+        for chId in contentIds:
+            lines = []
+            if not chId in self.novel.chapters:
+                mapping = self._get_frontmatterMapping()
+                lines.append(
+                    Template(self._frontmatter).safe_substitute(
+                        mapping
+                    )
+                )
+
+            elif self.novel.chapters[chId].chType != 0:
+                continue
+
+            else:
+                if self.novel.chapters[chId].chLevel == 1:
+                    template = Template(self._partTemplate)
+                else:
+                    template = Template(self._chapterTemplate)
+                mapping = self._get_chapterMapping(chId)
+                lines.append(
+                    template.safe_substitute(mapping)
+                )
+
+                # Process sections.
+                lines.extend(
+                    self._get_sections(
+                        chId,
+                        self.novel.chapters[chId].hasEpigraph,
+                    )
+                )
+            if not lines:
+                continue
+
+            fileHeader = Template(self._fileHeader).safe_substitute(
+                mapping
+            )
+            text = f'{fileHeader}{"".join(lines)}{self._fileFooter}'
+            contentIndex += 1
+            write_file(contentIndex, text, chId)
 
         return ChIdsByContentFileNames
 
@@ -417,9 +442,14 @@ class Epub(File):
         tocNcxLines = [
             Template(self._TOC_NCX_HEADER).safe_substitute(ncxMapping),
         ]
-        for i, ContentFileName in enumerate(ChIdsByContentFileNames):
+        i = 0
+        for ContentFileName in ChIdsByContentFileNames:
             chId = ChIdsByContentFileNames[ContentFileName]
-            order = str(i + 1)
+            if not chId in self.novel.chapters:
+                continue
+
+            i += 1
+            order = str(i)
             navPointMapping = {
                 'NavpointID': f'navPoint-{order}',
                 'Playorder': order,

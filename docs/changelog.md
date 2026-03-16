@@ -5,8 +5,10 @@
 ## Changelog
 
 
-### Version 5.0.0
+### Version 0.1.0
 
-- Release under the GPLv3 license.
+- Creating ebooks that can be read with the Calibre eReader.
 
-Compatibility: novelibre version 5.0 API
+API: 5.0
+Based on novelibre 5.53.0
+

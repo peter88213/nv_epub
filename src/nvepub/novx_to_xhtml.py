@@ -13,7 +13,6 @@ class NovxToXhtml(sax.ContentHandler):
     def __init__(self):
         super().__init__()
         self.xhtmlLines = None
-        self._languages = None
         self._indentParagraph = None
         self._note = None
         self._comment = None
@@ -23,7 +22,6 @@ class NovxToXhtml(sax.ContentHandler):
     def feed(
         self,
         xmlString,
-        languages,
         append,
         firstInChapter,
         isEpigraph,
@@ -32,13 +30,11 @@ class NovxToXhtml(sax.ContentHandler):
         
         Positional arguments:
             xmlString: str -- content as XML string.
-            languages: list[str] -- Ordered list of the document's languages.
             append: boolean -- indent the first paragraph, if True.
             firstInChapter: boolean -- apply the "Chapter beginning" 
                                        paragraph style, if True.
             isEpigraph: bool -- if True, use "Epigraph" paragraph styles.            
         """
-        self._languages = languages
         self._firstParagraphInChapter = firstInChapter
         self._indentParagraph = append and not isEpigraph
         self._isEpigraph = isEpigraph
@@ -124,7 +120,7 @@ class NovxToXhtml(sax.ContentHandler):
         if name == 'p':
             if xmlAttributes.get('style', None) == 'quotations':
                 self.xhtmlLines.append(
-                    '<p class="Quotations">'
+                    '<p class="quotations">'
                 )
             elif self._note:
                 return
@@ -134,19 +130,19 @@ class NovxToXhtml(sax.ContentHandler):
 
             elif self._firstParagraphInChapter:
                 self.xhtmlLines.append(
-                    f'<p class="Chapter_beginning">'
+                    f'<p class="chapter_beginning">'
                 )
             elif self._isEpigraph:
                 self.xhtmlLines.append(
-                    f'<p class="Epigraph">'
+                    f'<p class="epigraph">'
                 )
             elif self._indentParagraph:
                 self.xhtmlLines.append(
-                    '<p class="First_line_indent">'
+                    '<p class="first_line_indent">'
                 )
             else:
                 self.xhtmlLines.append(
-                    '<p class="Text_body">'
+                    '<p class="text_body">'
                 )
             if not self._isEpigraph:
                 self._firstParagraphInChapter = False
@@ -193,7 +189,7 @@ class NovxToXhtml(sax.ContentHandler):
         ):
             level = name[-1]
             self.xhtmlLines.append(
-                f'<p class="Heading_{level}">'
+                f'<p class="custom_{level}">'
             )
             language = xmlAttributes.get('xml:lang', None)
             if language:

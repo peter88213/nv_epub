@@ -20,15 +20,15 @@ import webbrowser
 
 from nvepub.nvepub_locale import _
 # this should be the first import
+from nvepub.epub import Epub
 from nvlib.controller.plugin.plugin_base import PluginBase
 from nvlib.novx_globals import norm_path
-from nvepub.epub import Epub
 
 
 class Plugin(PluginBase):
     """Template plugin class."""
     VERSION = '@release'
-    API_VERSION = '5.0'
+    API_VERSION = '5.53'
     DESCRIPTION = 'EPUB exporter'
     URL = 'https://github.com/peter88213/nv_epub'
 
@@ -74,7 +74,7 @@ class Plugin(PluginBase):
             return False
 
         path, __ = os.path.splitext(self._mdl.prjFile.filePath)
-        EpubPath = f'{path}{Epub.EXTENSION}'
+        EpubPath = f'{path}{Epub.SUFFIX}{Epub.EXTENSION}'
         if os.path.isfile(EpubPath):
             if not self._ui.ask_yes_no(
                 message=_('Overwrite existing Ebook?'),
@@ -89,7 +89,7 @@ class Plugin(PluginBase):
         EpubFile.novel = self._mdl.novel
         try:
             EpubFile.write()
-        except TypeError as ex:
+        except NotImplementedError as ex:
             self._ui.set_status(f'!{str(ex)}')
             return False
 

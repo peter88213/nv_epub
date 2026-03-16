@@ -11,21 +11,52 @@ p
     {
     margin:0pt;
     text-indent:0em;
-    line-height: 1em;
-    text-align: justify;
-    font-size: 1.00em;
+    line-height: 1.2em;
+    text-align: left;
+    font-size: 1.0em;
     widows: 2;
     orphans: 2;
     }
-p+p
+p.chapter_beginning, p.text_body
+    {
+    text-indent:0em;
+    }
+p.first_line_indent
     {
     text-indent:1.5em;
+    }
+p.quotations
+    {
+    margin-left:2.5em;
+    margin-right: 1em;
+    }
+p.epigraph
+    {
+    font-size: 0.8em;
+    margin-left:3em;
+    margin-right:3em;
+    margin-top:2em;
+    margin-bottom:1.5em;
     line-height: 1em;
     }
-a
+p.epigraph_source
     {
-    color:#000000;
-    text-decoration:underline;
+    font-size: 0.8em;
+    margin-left:3em;
+    margin-right:3em;
+    text-align: center;
+    margin-bottom:3em;
+    font-variant: small-caps;
+    line-height: 1em;
+    }
+strong
+    {
+    font-weight: normal;
+    text-transform: uppercase;
+    }
+em 
+    {
+    font-style: italic;
     }
 h1
     {
@@ -67,7 +98,7 @@ h4
     text-align: center;
     text-indent:0em;
     }
-h5
+p.custom_5
     {
     margin-top:2em;
     margin-bottom:2em;
@@ -77,7 +108,7 @@ h5
     text-align: center;
     text-indent:0em;
     }
-h6
+p.custom_6, .custom_7, .custom_8, .custom_9
     {
     margin-top:2em;
     margin-bottom:2em;
@@ -96,7 +127,7 @@ h6
     text-align: center;
     text-indent:0em;
     }
-.subtitle
+.subtitle, .author
     {
     margin-top:2em;
     margin-bottom:1.5em;
@@ -105,219 +136,4 @@ h6
     text-align: center;
     text-indent:0em;
     }
-.footnote
-    {
-    font-size: .90em;
-    margin-left:1em;
-    text-indent:-1.5em;
-    text-align: justify;
-    page-break-before: always;
-    border-top: 0.5px;
-    border-top-style: solid;
-    border-top-color: black;
-    padding-top:1em;
-    width: 60%;
-    }
-.quotations
-    {
-    margin-left:2.5em;
-    margin-right:1em;
-    text-indent:-1em;
-    text-align: left;
-    }
-.marginalia
-    {
-    font-size: .90em;
-    margin-top:1em;
-    margin-bottom:1em;
-    margin-left:35%;
-    text-indent:0em;
-    text-align: justify;
-    }
-.noindent
-    {
-    margin:0pt;
-    text-indent:0em;
-    text-align: justify;
-    font-size: 1.00em;
-    }
-.illustration
-    {
-    margin:0pt;
-    margin-bottom:2em;
-    text-indent:0em;
-    text-align: center;
-    font-size: .80em;
-    font-style:oblique;
-    }
-.left
-    {
-    text-align: left;
-    }
-.center
-    {
-    text-align: center;
-    text-indent:0em;
-    }
-.right
-    {
-    text-align: right;
-    }
-.bold
-    {
-    font-weight: bold;
-    }
-.italic
-    {
-    font-style: italic;
-    }
-.underline
-    {
-    text-decoration:underline;
-    }
-.caption
-    {
-    margin-top:1em;
-    margin-right:0em;
-    margin-bottom:0.3em;
-    margin-left:0em;
-    page-break-after:avoid;
-    font-size: 1.00em;
-    font-style: italic;
-    text-align: center;
-    color:#000000;
-    }
-.dropcap
-		{
-		float: left;
-		font-size: 4.7em;
-		line-height: 0.8em;
-		margin-right: 3pt;
-		margin-bottom: -0.1em;
-    }
-img
-    {
-    max-width:100%;
-    }
-.floatleft
-    {
-    float:left;
-    margin: 0.5em;
-    padding: 2px;
-    }
-.floatright
-    {
-    float:right;
-    margin: 0.5em;
-    padding: 2px;
-    }
-.bordertop
-    {
-    border-top: 0.75pt solid black
-    }
-.listnumbers
-    {
-    display: block;
-    list-style-type: decimal;
-    }
-.listlowercase
-    {
-    display: block;
-    list-style-type: lower-latin;
-    }
-.listcapitals
-    {
-    display: block;
-    list-style-type: upper-latin;
-    }
-.listroman
-    {
-    display: block;
-    list-style-type: upper-roman;
-    }
-.listromanl
-    {
-    display: block;
-    list-style-type: lower-roman;
-    }
-.listcircle
-    {
-    display: block;
-    list-style-type: circle;
-    }
-.listdisc
-    {
-    display: block;
-    list-style-type: disc;
-    }
-.listsquare
-    {
-    display: block;
-    list-style-type: square;
-    }
-.index1
-    {
-    margin-top: 0.5em;
-    text-indent: 2em;
-    }
-.index2
-    {
-    text-indent: 3em;
-    font-style: italic;
-    }
-.index3, .index4, .index5, .index6
-    {
-    text-indent: 4em;
-    font-style: italic;
-    }
-pre
-    {
-    margin:0pt;
-    font-family:monospace;
-    text-indent:0em;
-    text-align: left;
-    font-size: .80em;
-    white-space: pre-wrap;
-    }
-img.cover
-    {
-    height: 100%;
-    }
-table
-    {
-    cellpadding: 1px;
-    cellspacing: 2px;
-    rules:all;
-    display: inline-table;
-    border-collapse:collapse;
-    margin-left:0px;
-    margin-right:0px;
-    }
-tr
-    {
-    }
-td
-    {
-    border:1px solid black;
-    }
-
-/*======== image rules ========*/
-
-
-
-/*===== end image rules ========*/
-
-.break
-    {
-    	page-break-before: always;
-    }
-hr
-    {
-    width: 70%;
-    margin-left: 15%;
-    }
-span.normal {font-style: normal;}
-span.linethrough {text-decoration: line-through}
-span.underline {text-decoration: underline}
-span.fakesmallcaps {font-size: .75em}
 '''
