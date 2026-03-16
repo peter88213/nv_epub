@@ -10,6 +10,15 @@ The [novelibre](https://github.com/peter88213/novelibre/) Python program helps a
 
 *nv_epub* is a plugin providing an EPUB exporter. 
 
+> [!NOTE]
+> This is a beta version intended for testing purposes. 
+> 
+> Since this plugin is currently under testing and development, updates may be provided frequently.
+> Consider installing the [nv_updater](https://github.com/peter88213/nv_updater/) update checker and running it from time to time. 
+>
+> Feel free to share your thoughts in the [novelibre discussion forum](https://github.com/peter88213/novelibre/discussions). 
+
+
 ## Requirements
 
 - [novelibre](https://github.com/peter88213/novelibre/) version 5.53+
