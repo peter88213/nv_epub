@@ -8,7 +8,7 @@ from xml import sax
 
 
 class NovxToXhtml(sax.ContentHandler):
-    """A parser to convert novx markup to odt markup."""
+    """A parser to convert novx XML markup to XHTML."""
 
     def __init__(self):
         super().__init__()
