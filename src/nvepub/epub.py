@@ -196,8 +196,6 @@ class Epub(FileExport):
         Write an xhtml file for each chapter.
         Return a list of file names.
         """
-        textDir = f'{self._tempDir}/OEBPS/text'
-        chapterNumber = 0
         sectionNumber = 0
         wordsTotal = 0
         contentIndex = 0
@@ -205,30 +203,22 @@ class Epub(FileExport):
 
         for chId in self.novel.tree.get_children(CH_ROOT):
             lines = []
-            dispNumber = 0
-            if not self.chapterFilter.accept(self, chId):
-                continue
-            # The order counts; be aware that "Todo" and "Notes" chapters are
-            # always unused.
-
-            # Has the chapter only sections not to be exported?
             template = None
             if self.novel.chapters[chId].chType != 0:
-                # Chapter is unused.
-                if self._unusedChapterTemplate:
-                    template = Template(self._unusedChapterTemplate)
-            elif self.novel.chapters[chId].chLevel == 1 and self._partTemplate:
+                continue
+
+            if self.novel.chapters[chId].chLevel == 1 and self._partTemplate:
                 template = Template(self._partTemplate)
             else:
                 template = Template(self._chapterTemplate)
-                chapterNumber += 1
-                dispNumber = chapterNumber
-            if template is not None:
-                lines.append(
-                    template.safe_substitute(
-                        self._get_chapterMapping(chId, dispNumber)
-                    )
+            lines.append(
+                template.safe_substitute(
+                    {
+                        'ID': chId,
+                        'Title': self.novel.chapters[chId].title,
+                    }
                 )
+            )
 
             # Process sections.
             sectionLines, sectionNumber, wordsTotal = self._get_sections(
@@ -239,19 +229,6 @@ class Epub(FileExport):
             )
             lines.extend(sectionLines)
 
-            # Process chapter ending.
-            template = None
-            if self.novel.chapters[chId].chType != 0:
-                if self._unusedChapterEndTemplate:
-                    template = Template(self._unusedChapterEndTemplate)
-            elif self._chapterEndTemplate:
-                template = Template(self._chapterEndTemplate)
-            if template is not None:
-                lines.append(
-                    template.safe_substitute(
-                        self._get_chapterMapping(chId, dispNumber)
-                    )
-                )
             if not lines:
                 continue
 
@@ -260,14 +237,7 @@ class Epub(FileExport):
             contentIndex += 1
             contentFileName = f'content{contentIndex:04}.xhtml'
             ChIdsByContentFileNames[contentFileName] = chId
-            textPath = (f'{textDir}/{contentFileName}')
-            try:
-                with open(textPath, 'w', encoding='utf-8') as f:
-                    f.write(text)
-            except:
-                raise RuntimeError(f'Cannot write "{norm_path(textPath)}".')
-
-            self._epubComponents.append(f'OEBPS/text/{contentFileName}')
+            self._write_file(f'OEBPS/text/{contentFileName}', text)
 
         return ChIdsByContentFileNames
 
