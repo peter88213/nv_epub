@@ -6,16 +6,17 @@ License: GNU GPLv3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
 """
 import os
 from shutil import rmtree
+from string import Template
 import tempfile
+import uuid
 import zipfile
 
 from nvepub.nvepub_globals import EPUB_SUFFIX
 from nvepub.nvepub_locale import _
 from nvepub.stylesheet import STYLESHEET
 from nvlib.model.file.file_export import FileExport
-from nvlib.novx_globals import norm_path
 from nvlib.novx_globals import CH_ROOT
-from string import Template
+from nvlib.novx_globals import norm_path
 
 
 class Epub(FileExport):
@@ -34,6 +35,28 @@ class Epub(FileExport):
         '   </rootfiles>\n'
         '</container>\n'
     )
+    _CONTENT_OPF_HEADER = (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookID" version="2.0">\n'
+        '    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">\n'
+        '        <dc:identifier id="BookID" opf:scheme="UUID">$Uuid</dc:identifier>\n'
+        '        <dc:contributor opf:role="bkp">Created with nv_epub $Version by Peter Triesberger '
+        'https://github.com/peter88213/nv_epub</dc:contributor>\n'
+        '        <dc:date opf:event="creation">$Date</dc:date>\n'
+        '        <dc:creator opf:role="aut">$Author</dc:creator>\n'
+        '        <dc:language>$Language</dc:language>\n'
+        '        <dc:title>$Title</dc:title>\n'
+        '        <meta name="nv_epub" content="$Version"/>\n'
+        '        <meta name="cover" content="cover.jpg"/>\n'
+        '    </metadata>'
+    )
+    _CONTENT_OPF_FOOTER = (
+        '    <guide>\n'
+        '       <reference type="cover" title="Cover Page" href="$Coverpage"/>\n'
+        '    </guide>\n'
+        '</package>\n'
+    )
+
     _fileHeader = (
         '<?xml version="1.0" encoding="utf-8"?>\n'
         '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n'
@@ -72,17 +95,21 @@ class Epub(FileExport):
         Extends the superclass constructor,        
         """
         super().__init__(filePath, **kwargs)
+        self.version = kwargs['version']
         self._tempDir = tempfile.mkdtemp(suffix='.tmp', prefix='nv_epub_')
         self._originalPath = self._filePath
-        self._epubComponents = [
-            'mimetype',
-            'META-INF/container.xml',
-            'OEBPS/styles/style001.css',
-        ]
+        self._epubComponents = []
+        self._contentFileNames = []
 
     def write(self):
         self._set_up()
-        #--- Pack the contents of the temporary directory into the ODF file.
+        contentFileNames = self._write_chapters()
+        self._write_content_opf(contentFileNames)
+        self._write_file('META-INF/container.xml', self._CONTAINER_XML)
+        self._write_file('mimetype', self._MIMETYPE)
+        self._write_file(f'OEBPS/styles/style001.css', STYLESHEET)
+
+        #--- Pack the contents of the temporary directory into the EPUB file.
         workdir = os.getcwd()
         backedUp = False
         if os.path.isfile(self.filePath):
@@ -114,18 +141,40 @@ class Epub(FileExport):
         self._tear_down()
         return f'{_("File written")}: "{norm_path(self.filePath)}".'
 
-    def _get_chapters(self):
+    def _set_up(self):
+        # Create and open a temporary directory for the files to zip.
+        try:
+            self._tear_down()
+            os.makedirs(f'{self._tempDir}/META-INF')
+            os.makedirs(f'{self._tempDir}/OEBPS/styles')
+            os.makedirs(f'{self._tempDir}/OEBPS/text')
+        except:
+            raise RuntimeError(
+                f'{_("Cannot create directory")}: '
+                f'"{norm_path(self._tempDir)}".'
+            )
+
+    def _tear_down(self):
+        # Delete the temporary directory containing the
+        # unpacked ODF directory structure.
+        try:
+            rmtree(self._tempDir)
+        except:
+            pass
+
+    def _write_chapters(self):
         """Process the chapters and nested sections.
         
-        Return a list of strings, or a message, depending 
-        on the _perChapter variable.
-        Extends the superclass method for the 'document per chapter' option.
+        Write an xhtml file for each chapter.
+        Return a list of file names.
         """
         textDir = f'{self._tempDir}/OEBPS/text'
         chapterNumber = 0
         sectionNumber = 0
         wordsTotal = 0
         contentIndex = 0
+        contentFileNames = []
+
         for chId in self.novel.tree.get_children(CH_ROOT):
             lines = []
             dispNumber = 0
@@ -159,7 +208,7 @@ class Epub(FileExport):
                 sectionNumber,
                 wordsTotal,
                 self.novel.chapters[chId].hasEpigraph,
-                )
+            )
             lines.extend(sectionLines)
 
             # Process chapter ending.
@@ -181,72 +230,67 @@ class Epub(FileExport):
             text = f'{self._fileHeader}{"".join(lines)}{self._fileFooter}'
 
             contentIndex += 1
-            textPath = (f'{textDir}/content{contentIndex:04}.xhtml')
-            self._epubComponents.append(f'OEBPS/text/content{contentIndex:04}.xhtml')
+            contentFileName = f'content{contentIndex:04}.xhtml'
+            contentFileNames.append(contentFileName)
+            textPath = (f'{textDir}/{contentFileName}')
             try:
                 with open(textPath, 'w', encoding='utf-8') as f:
                     f.write(text)
             except:
                 raise RuntimeError(f'Cannot write "{norm_path(textPath)}".')
 
-    def _set_up(self):
-        # Helper method for ZIP file generation.
-        # Prepare the temporary directory containing the internal structure
-        # of an EPUB file.
-        # Raise the "RuntimeError" exception in case of error.
+            self._epubComponents.append(f'OEBPS/text/{contentFileName}')
 
-        #--- Create and open a temporary directory for the files to zip.
-        try:
-            self._tear_down()
-            os.makedirs(f'{self._tempDir}/META-INF')
-            os.makedirs(f'{self._tempDir}/OEBPS/styles')
-            os.makedirs(f'{self._tempDir}/OEBPS/text')
-        except:
-            raise RuntimeError(
-                f'{_("Cannot create directory")}: '
-                f'"{norm_path(self._tempDir)}".'
+        return contentFileNames
+
+    def _write_content_opf(self, contentFileNames):
+        opfMapping = {
+            'Uuid': str(uuid.uuid4()),
+            'Version': self.version,
+            'Date': '',
+            'Author': self.novel.authorName,
+            'Language': self.novel.languageCode,
+            'Title': self.novel.title,
+            'Coverpage': 'text/content0001.xhtml'
+        }
+        contentOpfLines = [
+            Template(self._CONTENT_OPF_HEADER).safe_substitute(opfMapping),
+        ]
+        contentOpfLines.append('    <manifest>')
+        contentOpfLines.append(
+            '        <item id="ncx" href="toc.ncx" '
+            'media-type="application/x-dtbncx+xml"/>'
+        )
+        contentOpfLines.append(
+            '        <item id="style001.css" '
+            'href="styles/style001.css" media-type="text/css"/>'
+        )
+        for fileName in contentFileNames:
+            contentOpfLines.append(
+                f'        <item id="{fileName}" href="text/{fileName}" '
+                'media-type="application/xhtml+xml"/>'
+
             )
-        #--- Generate mimetype.
+        contentOpfLines.append('    <manifest>')
+        contentOpfLines.append('    <spine toc="ncx">')
+        for fileName in contentFileNames:
+            contentOpfLines.append(
+                f'       <itemref idref="{fileName}"/>'
+            )
+        contentOpfLines.append('    </spine>')
+        contentOpfLines.append(
+            Template(self._CONTENT_OPF_FOOTER).safe_substitute(opfMapping),
+        )
+        self._write_file(f'OEBPS/content.opf', '\n'.join(contentOpfLines))
+
+    def _write_file(self, localPath, content):
+        self._epubComponents.append(localPath)
         try:
             with open(
-                f'{self._tempDir}/mimetype',
+                f'{self._tempDir}/{localPath}',
                 'w',
                 encoding='utf-8'
             ) as f:
-                f.write(self._MIMETYPE)
+                f.write(content)
         except:
-            raise RuntimeError(f'{_("Cannot write file")}: "mimetype"')
-
-        #--- Generate META-INF\container.xml.
-        try:
-            with open(
-                f'{self._tempDir}/META-INF/container.xml',
-                'w',
-                encoding='utf-8'
-            ) as f:
-                f.write(self._CONTAINER_XML)
-        except:
-            raise RuntimeError(f'{_("Cannot write file")}: "container.xml"')
-
-        #--- Generate OEBPS/styles/style001.css.
-        try:
-            with open(
-                f'{self._tempDir}/OEBPS/styles/style001.css',
-                'w',
-                encoding='utf-8'
-            ) as f:
-                f.write(STYLESHEET)
-        except:
-            raise RuntimeError(f'{_("Cannot write file")}: "style001.css"')
-
-        #--- Generate OEBPS/text/contentxxxx.xhtml.
-        self._get_chapters()
-
-    def _tear_down(self):
-        # Delete the temporary directory containing the
-        # unpacked ODF directory structure.
-        try:
-            rmtree(self._tempDir)
-        except:
-            pass
-
+            raise RuntimeError(f'{_("Cannot write file")}: "{self._tempDir}/{localPath}"')

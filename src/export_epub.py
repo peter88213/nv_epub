@@ -19,7 +19,10 @@ def run(sourcePath, suffix=''):
     converter = NovxConverter()
     converter.EXPORT_TARGET_CLASSES.append(Epub)
     converter.ui = ui
-    kwargs = {'suffix': suffix}
+    kwargs = {
+        'suffix': suffix,
+        'version':'0.0',
+    }
     converter.run(sourcePath, **kwargs)
     ui.start()
 
