@@ -4,6 +4,7 @@ Copyright (c) Peter Triesberger
 For further information see https://github.com/peter88213/nv_epub
 License: GNU GPLv3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
 """
+import datetime
 import os
 from shutil import rmtree
 from string import Template
@@ -28,7 +29,8 @@ class Epub(FileExport):
     _MIMETYPE = 'application/epub+zip'
     _CONTAINER_XML = (
         '<?xml version="1.0"?>\n'
-        '<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">\n'
+        '<container version="1.0" '
+        'xmlns="urn:oasis:names:tc:opendocument:xmlns:container">\n'
         '    <rootfiles>\n'
         '        <rootfile full-path='
         '"OEBPS/content.opf" media-type="application/oebps-package+xml"/>\n'
@@ -37,10 +39,14 @@ class Epub(FileExport):
     )
     _CONTENT_OPF_HEADER = (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookID" version="2.0">\n'
-        '    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">\n'
-        '        <dc:identifier id="BookID" opf:scheme="UUID">$Uuid</dc:identifier>\n'
-        '        <dc:contributor opf:role="bkp">Created with nv_epub $Version by Peter Triesberger '
+        '<package xmlns="http://www.idpf.org/2007/opf" '
+        'unique-identifier="BookID" version="2.0">\n'
+        '    <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" '
+        'xmlns:opf="http://www.idpf.org/2007/opf">\n'
+        '        <dc:identifier id="BookID" '
+        'opf:scheme="UUID">$Uuid</dc:identifier>\n'
+        '        <dc:contributor opf:role="bkp">Created with nv_epub '
+        '$Version by Peter Triesberger '
         'https://github.com/peter88213/nv_epub</dc:contributor>\n'
         '        <dc:date opf:event="creation">$Date</dc:date>\n'
         '        <dc:creator opf:role="aut">$Author</dc:creator>\n'
@@ -52,9 +58,31 @@ class Epub(FileExport):
     )
     _CONTENT_OPF_FOOTER = (
         '    <guide>\n'
-        '       <reference type="cover" title="Cover Page" href="$Coverpage"/>\n'
+        '       <reference type="cover" '
+        'title="Cover Page" href="$Coverpage"/>\n'
         '    </guide>\n'
         '</package>\n'
+    )
+    _TOC_NCX_HEADER = (
+        '<?xml version="1.0"?>\n'
+        '<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN"\n'
+        '    "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">\n'
+        '\n'
+        '<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">\n'
+        '    <head>\n'
+        '        <meta name="dtb:uid" content="$Uuid"/>\n'
+        '        <meta name="dtb:depth" content="2"/>\n'
+        '        <meta name="dtb:totalPageCount" content="0"/>\n'
+        '        <meta name="dtb:maxPageNumber" content="0"/>\n'
+        '    </head>\n'
+        '    <docTitle>\n'
+        '        <text>$Title</text>\n'
+        '    </docTitle>\n'
+        '    <navMap>'
+    )
+    _TOC_NCX_FOOTER = (
+        '    </navMap>\n'
+        '</ncx>\n'
     )
 
     _fileHeader = (
@@ -83,31 +111,23 @@ class Epub(FileExport):
     _sectionDivider = '<h4">* * *</h4>\n'
 
     def __init__(self, filePath, **kwargs):
-        """Create a temporary directory for zipfile generation.
-        
-        Positional arguments:
-            filePath: str -- path to the file 
-                             represented by the Novel instance.
-            
-        Optional arguments:
-            kwargs -- keyword arguments to be used by subclasses.            
-
-        Extends the superclass constructor,        
-        """
         super().__init__(filePath, **kwargs)
         self.version = kwargs['version']
+        self.uuid = None
         self._tempDir = tempfile.mkdtemp(suffix='.tmp', prefix='nv_epub_')
         self._originalPath = self._filePath
         self._epubComponents = []
-        self._contentFileNames = []
+        self._ChIdsByContentFileNames = []
 
     def write(self):
         self._set_up()
-        contentFileNames = self._write_chapters()
-        self._write_content_opf(contentFileNames)
+        self.uuid = str(uuid.uuid4())
+        ChIdsByContentFileNames = self._write_chapters()
+        self._write_file(f'OEBPS/styles/style001.css', STYLESHEET)
+        self._write_toc_ncx(ChIdsByContentFileNames)
+        self._write_content_opf(ChIdsByContentFileNames)
         self._write_file('META-INF/container.xml', self._CONTAINER_XML)
         self._write_file('mimetype', self._MIMETYPE)
-        self._write_file(f'OEBPS/styles/style001.css', STYLESHEET)
 
         #--- Pack the contents of the temporary directory into the EPUB file.
         workdir = os.getcwd()
@@ -173,7 +193,7 @@ class Epub(FileExport):
         sectionNumber = 0
         wordsTotal = 0
         contentIndex = 0
-        contentFileNames = []
+        ChIdsByContentFileNames = {}
 
         for chId in self.novel.tree.get_children(CH_ROOT):
             lines = []
@@ -231,7 +251,7 @@ class Epub(FileExport):
 
             contentIndex += 1
             contentFileName = f'content{contentIndex:04}.xhtml'
-            contentFileNames.append(contentFileName)
+            ChIdsByContentFileNames[contentFileName] = chId
             textPath = (f'{textDir}/{contentFileName}')
             try:
                 with open(textPath, 'w', encoding='utf-8') as f:
@@ -241,13 +261,13 @@ class Epub(FileExport):
 
             self._epubComponents.append(f'OEBPS/text/{contentFileName}')
 
-        return contentFileNames
+        return ChIdsByContentFileNames
 
-    def _write_content_opf(self, contentFileNames):
+    def _write_content_opf(self, ChIdsByContentFileNames):
         opfMapping = {
-            'Uuid': str(uuid.uuid4()),
+            'Uuid': self.uuid,
             'Version': self.version,
-            'Date': '',
+            'Date': datetime.date.today().isoformat(),
             'Author': self.novel.authorName,
             'Language': self.novel.languageCode,
             'Title': self.novel.title,
@@ -265,7 +285,7 @@ class Epub(FileExport):
             '        <item id="style001.css" '
             'href="styles/style001.css" media-type="text/css"/>'
         )
-        for fileName in contentFileNames:
+        for fileName in ChIdsByContentFileNames:
             contentOpfLines.append(
                 f'        <item id="{fileName}" href="text/{fileName}" '
                 'media-type="application/xhtml+xml"/>'
@@ -273,7 +293,7 @@ class Epub(FileExport):
             )
         contentOpfLines.append('    <manifest>')
         contentOpfLines.append('    <spine toc="ncx">')
-        for fileName in contentFileNames:
+        for fileName in ChIdsByContentFileNames:
             contentOpfLines.append(
                 f'       <itemref idref="{fileName}"/>'
             )
@@ -294,3 +314,16 @@ class Epub(FileExport):
                 f.write(content)
         except:
             raise RuntimeError(f'{_("Cannot write file")}: "{self._tempDir}/{localPath}"')
+
+    def _write_toc_ncx(self, ChIdsByContentFileNames):
+        ncxMapping = {
+            'Uuid': self.uuid,
+            'Title': self.novel.title,
+        }
+        tocNcxLines = [
+            Template(self._TOC_NCX_HEADER).safe_substitute(ncxMapping),
+        ]
+        tocNcxLines.append(
+            Template(self._TOC_NCX_FOOTER).safe_substitute(ncxMapping),
+        )
+        self._write_file(f'OEBPS/toc.ncx', '\n'.join(tocNcxLines))
