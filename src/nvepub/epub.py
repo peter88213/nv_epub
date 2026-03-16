@@ -12,6 +12,7 @@ import tempfile
 import uuid
 import zipfile
 
+from nvepub.novx_to_xhtml import NovxToXhtml
 from nvepub.nvepub_globals import EPUB_SUFFIX
 from nvepub.nvepub_locale import _
 from nvepub.stylesheet import STYLESHEET
@@ -127,6 +128,7 @@ class Epub(File):
         self._originalPath = self._filePath
         self._epubComponents = []
         self._ChIdsByContentFileNames = []
+        self._contentParser = NovxToXhtml()
 
     def write(self):
         self._set_up()
@@ -171,8 +173,39 @@ class Epub(File):
         return f'{_("File written")}: "{norm_path(self.filePath)}".'
 
     def _convert_from_novx(self, text, **kwargs):
-        if text is None:
-            text = ''
+        append = kwargs.get('append', False)
+        firstInChapter = kwargs.get('firstInChapter', False)
+        isEpigraph = kwargs.get('isEpigraph', False)
+        xml = kwargs.get('xml', False)
+
+        if not text and not isEpigraph:
+            return ''
+
+        if xml:
+            self._contentParser.feed(
+                text,
+                self.novel.languages,
+                append,
+                firstInChapter,
+                isEpigraph,
+            )
+            return ''.join(self._contentParser.xhtmlLines)
+
+        # Convert plain text into XML.
+        lines = text.split('\n')
+        if isEpigraph:
+            # isEpigraph means that the text is an epigraph's source
+            text = '<br />'.join(lines)
+        else:
+            text = ('</p><p>').join(lines)
+
+        if isEpigraph:
+            attr = ' class="Epigraph_source"'
+        else:
+            attr = ''
+        return (
+            f'<p{attr}>{text}</p>'
+        )
         return(text)
 
     def _get_sectionMapping(
@@ -283,8 +316,6 @@ class Epub(File):
         Write an xhtml file for each chapter.
         Return a list of file names.
         """
-        sectionNumber = 0
-        wordsTotal = 0
         contentIndex = 0
         ChIdsByContentFileNames = {}
 
@@ -308,12 +339,12 @@ class Epub(File):
             )
 
             # Process sections.
-            sectionLines = self._get_sections(
-                chId,
-                self.novel.chapters[chId].hasEpigraph,
+            lines.extend(
+                self._get_sections(
+                    chId,
+                    self.novel.chapters[chId].hasEpigraph,
+                )
             )
-            lines.extend(sectionLines)
-
             if not lines:
                 continue
 
