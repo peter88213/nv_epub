@@ -5,10 +5,19 @@
 ## Changelog
 
 
+### Version 0.2.2
+
+- Fixed a bug in the `content.opf` generation. 
+  The created e-books are now accepted by the *Tolino* reader. 
+
+API: 5.53
+Based on novelibre 5.53.1
+
+
 ### Version 0.2.1
 
-- Fixed comment and note handling of the NovxToXhtml parser. 
-- Refactored the NovxToXhtml parser. 
+- Fixed comment and note handling of the `NovxToXhtml` parser. 
+- Refactored the `NovxToXhtml` parser. 
 
 API: 5.53
 Based on novelibre 5.53.1

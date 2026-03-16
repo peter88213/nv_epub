@@ -410,7 +410,7 @@ class Epub(File):
                 'media-type="application/xhtml+xml"/>'
 
             )
-        contentOpfLines.append('    <manifest>')
+        contentOpfLines.append('    </manifest>')
         contentOpfLines.append('    <spine toc="ncx">')
         for fileName in ChIdsByContentFileNames:
             contentOpfLines.append(

@@ -1,4 +1,4 @@
-[![Download the latest release](docs/img/download-button.png)](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v0.2.1.pyz)
+[![Download the latest release](docs/img/download-button.png)](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v0.2.2.pyz)
 [![Changelog](docs/img/changelog-button.png)](docs/changelog.md)
 [![News/Feedback](docs/img/news-button.png)](https://github.com/peter88213/novelibre/discussions)
 [![Online help](docs/img/help-button.png)](https://peter88213.github.io/nv_epub/help/)
@@ -13,7 +13,7 @@ The [novelibre](https://github.com/peter88213/novelibre/) Python program helps a
 > [!NOTE]
 > This is a beta version intended for testing purposes. 
 > It is possible that the generated EPUB e-books are not yet compatible with every e-reader.
-> For now, they are supported by the *Calibre* application. 
+> For now, they are supported by the *Calibre* application and the *Tolino* reader. 
 > 
 > Since this plugin is currently under testing and development, updates may be provided frequently.
 > Consider installing the [nv_updater](https://github.com/peter88213/nv_updater/) update checker and running it from time to time. 
@@ -29,10 +29,10 @@ The [novelibre](https://github.com/peter88213/novelibre/) Python program helps a
 
 ### Default: Executable Python zip archive
 
-Download the latest release [nv_epub_v0.2.1.pyz](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v0.2.1.pyz)
+Download the latest release [nv_epub_v0.2.2.pyz](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v0.2.2.pyz)
 
-- Launch *nv_epub_v0.2.1.pyz* by double-clicking (Windows desktop),
-- or execute `python nv_epub_v0.2.1.pyz` (Windows), resp. `python3 nv_epub_v0.2.1.pyz` (Linux) on the command line.
+- Launch *nv_epub_v0.2.2.pyz* by double-clicking (Windows desktop),
+- or execute `python nv_epub_v0.2.2.pyz` (Windows), resp. `python3 nv_epub_v0.2.2.pyz` (Linux) on the command line.
 
 > [!IMPORTANT]
 > Many web browsers recognize the download as an executable file and offer to open it immediately. 
@@ -47,9 +47,9 @@ Download the latest release [nv_epub_v0.2.1.pyz](https://github.com/peter88213/n
 
 ### Alternative: Zip file
 
-The package is also available in zip format: [nv_epub_v0.2.1.zip](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v0.2.1.zip)
+The package is also available in zip format: [nv_epub_v0.2.2.zip](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v0.2.2.zip)
 
-- Extract the *nv_epub_v0.2.1* folder from the downloaded zipfile "nv_epub_v0.2.1.zip".
+- Extract the *nv_epub_v0.2.2* folder from the downloaded zipfile "nv_epub_v0.2.2.zip".
 - Move into this new folder and launch *setup.py* by double-clicking (Windows/Linux desktop), 
 - or execute `python setup.py` (Windows), resp. `python3 setup.py` (Linux) on the command line.
 
