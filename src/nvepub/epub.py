@@ -80,6 +80,14 @@ class Epub(FileExport):
         '    </docTitle>\n'
         '    <navMap>'
     )
+    _TOC_NAV_POINT = (
+'      <navPoint id="$NavpointID" playOrder="$Playorder">\n'
+'        <navLabel>\n'
+'          <text>$Title</text>\n'
+'        </navLabel>\n'
+'        <content src="text/$Filename#$HeadingID"/>\n'
+'      </navPoint>'
+    )
     _TOC_NCX_FOOTER = (
         '    </navMap>\n'
         '</ncx>\n'
@@ -323,6 +331,19 @@ class Epub(FileExport):
         tocNcxLines = [
             Template(self._TOC_NCX_HEADER).safe_substitute(ncxMapping),
         ]
+        for i, ContentFileName in enumerate(ChIdsByContentFileNames):
+            chId = ChIdsByContentFileNames[ContentFileName]
+            order = str(i + 1)
+            navPointMapping = {
+                'NavpointID': f'navPoint-{order}',
+                'Playorder': order,
+                'Title': self.novel.chapters[chId].title,
+                'Filename': ContentFileName,
+                'HeadingID': chId,
+            }
+            tocNcxLines.append(
+                Template(self._TOC_NAV_POINT).safe_substitute(navPointMapping),
+            )
         tocNcxLines.append(
             Template(self._TOC_NCX_FOOTER).safe_substitute(ncxMapping),
         )
