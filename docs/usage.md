@@ -15,6 +15,8 @@ If [novelibre](https://github.com/peter88213/novelibre/) is installed, the setup
 
 # Operation
 
+See the [online help](https://peter88213.github.io/nv_epub/help/).
+
 ---
 
 # License

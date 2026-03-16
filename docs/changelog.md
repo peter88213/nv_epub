@@ -5,6 +5,14 @@
 ## Changelog
 
 
+### Version 0.2.0
+
+- Providing online help.
+
+API: 5.0
+Based on novelibre 5.53.0
+
+
 ### Version 0.1.0
 
 - Creating ebooks that can be read with the Calibre eReader.

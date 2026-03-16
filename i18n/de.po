@@ -3,9 +3,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.1.0\n"
+"Project-Id-Version: 0.2.0\n"
 "POT-Creation-Date: 2026-03-15 16:18:14\n"
-"PO-Revision-Date: 2026-03-15 16:20:01\n"
+"PO-Revision-Date: 2026-03-16 20:57:42\n"
 "Last-Translator: Peter Triesberger\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -41,9 +41,6 @@ msgstr "Kann Datei nicht schreiben"
 msgid "Characterization"
 msgstr "Charakterisierung"
 
-msgid "Day"
-msgstr "Tag"
-
 msgid "Done"
 msgstr "Fertiggestellt"
 
@@ -55,9 +52,6 @@ msgstr "Ebook"
 
 msgid "Ending"
 msgstr "Ende"
-
-msgid "Field"
-msgstr "Feld"
 
 msgid "File"
 msgstr "Datei"
@@ -97,21 +91,6 @@ msgstr "Handlungsfortschritt"
 
 msgid "World building"
 msgstr "Weltenbau"
-
-msgid "YYYY-MM-DD"
-msgstr "JJJJ-MM-TT"
-
-msgid "d"
-msgstr "d"
-
-msgid "h"
-msgstr "h"
-
-msgid "hh:mm"
-msgstr "hh:mm"
-
-msgid "min"
-msgstr "min"
 
 msgid "nv_epub Online help"
 msgstr "nv_epub Online-Hilfe"

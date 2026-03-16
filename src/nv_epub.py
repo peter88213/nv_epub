@@ -32,7 +32,7 @@ class Plugin(PluginBase):
     DESCRIPTION = 'EPUB exporter'
     URL = 'https://github.com/peter88213/nv_epub'
 
-    HELP_URL = 'https://github.com/peter88213/nv_epub/tree/main/docs/nv_epub'
+    HELP_URL = 'https://peter88213.github.io/nv_epub/help/'
 
     def install(self, model, view, controller):
         """Install the plugin.
