@@ -108,7 +108,7 @@ class Epub(FileExport):
         '<h2 id="$ID">$Title</h2>\n'
     )
     _sectionTemplate = '$SectionContent\n'
-    _sectionDivider = '<h4">* * *</h4>\n'
+    _sectionDivider = '<h4>* * *</h4>\n'
 
     def __init__(self, filePath, **kwargs):
         super().__init__(filePath, **kwargs)
