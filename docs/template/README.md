@@ -12,6 +12,8 @@ The [novelibre](https://github.com/peter88213/novelibre/) Python program helps a
 
 > [!NOTE]
 > This is a beta version intended for testing purposes. 
+> It is possible that the generated EPUB e-books are not yet compatible with every e-reader.
+> For now, they are supported by the *Calibre* application. 
 > 
 > Since this plugin is currently under testing and development, updates may be provided frequently.
 > Consider installing the [nv_updater](https://github.com/peter88213/nv_updater/) update checker and running it from time to time. 
