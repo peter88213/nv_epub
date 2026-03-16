@@ -5,6 +5,15 @@
 ## Changelog
 
 
+### Version 0.2.1
+
+- Fixed comment and note handling of the NovxToXhtml parser. 
+- Refactored the NovxToXhtml parser. 
+
+API: 5.53
+Based on novelibre 5.53.1
+
+
 ### Version 0.2.0
 
 - Providing online help.

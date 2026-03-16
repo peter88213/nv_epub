@@ -66,13 +66,19 @@ class NovxToXhtml(sax.ContentHandler):
         Overrides the xml.sax.ContentHandler method     
         """
         if name == 'p':
+            if self._note:
+                return
+
+            if self._comment:
+                return
+
             while self._spanLevel > 0:
                 self._spanLevel -= 1
                 self.xhtmlLines.append('</span>')
             self.xhtmlLines.append('</p>\n')
             return
 
-        if name in ('em', 'strong', 'span'):
+        if name in ('em', 'strong', 'span', 'li'):
             self.xhtmlLines.append(f'</{name}>')
             return
 
@@ -82,23 +88,14 @@ class NovxToXhtml(sax.ContentHandler):
 
         if name == 'note':
             self._note = False
+            return
 
-        if name in (
-            'h5',
-            'h6',
-            'h7',
-            'h8',
-            'h9',
-        ):
+        if name in ('h5', 'h6', 'h7', 'h8', 'h9',):
             while self._spanLevel > 0:
                 self._spanLevel -= 1
                 self.xhtmlLines.append('</span>')
             self.xhtmlLines.append('</p>\n')
             self._indentParagraph = False
-            return
-
-        if name == 'li':
-            self.xhtmlLines.append('</li>\n')
             return
 
         if name == 'ul':
@@ -118,32 +115,22 @@ class NovxToXhtml(sax.ContentHandler):
             xmlAttributes[attrKey] = attrValue
 
         if name == 'p':
-            if xmlAttributes.get('style', None) == 'quotations':
-                self.xhtmlLines.append(
-                    '<p class="quotations">'
-                )
-            elif self._note:
+            if self._note:
                 return
 
-            elif self._comment:
-                self.xhtmlLines.append('<p>')
+            if self._comment:
+                return
 
+            if self._isEpigraph:
+                self.xhtmlLines.append(f'<p class="epigraph">')
+            elif xmlAttributes.get('style', None) == 'quotations':
+                self.xhtmlLines.append('<p class="quotations">')
             elif self._firstParagraphInChapter:
-                self.xhtmlLines.append(
-                    f'<p class="chapter_beginning">'
-                )
-            elif self._isEpigraph:
-                self.xhtmlLines.append(
-                    f'<p class="epigraph">'
-                )
+                self.xhtmlLines.append(f'<p class="chapter_beginning">')
             elif self._indentParagraph:
-                self.xhtmlLines.append(
-                    '<p class="first_line_indent">'
-                )
+                self.xhtmlLines.append('<p class="first_line_indent">')
             else:
-                self.xhtmlLines.append(
-                    '<p class="text_body">'
-                )
+                self.xhtmlLines.append('<p class="text_body">')
             if not self._isEpigraph:
                 self._firstParagraphInChapter = False
                 self._indentParagraph = False
@@ -154,16 +141,8 @@ class NovxToXhtml(sax.ContentHandler):
                 self._spanLevel += 1
             return
 
-        if name == 'em':
-            self.xhtmlLines.append(
-                '<em>'
-            )
-            return
-
-        if name == 'strong':
-            self.xhtmlLines.append(
-                '<strong>'
-            )
+        if name in ('em', 'strong', 'li'):
+            self.xhtmlLines.append(f'<{name}>')
             return
 
         if name == 'span':
@@ -180,13 +159,7 @@ class NovxToXhtml(sax.ContentHandler):
             self._note = True
             return
 
-        if name in (
-            'h5',
-            'h6',
-            'h7',
-            'h8',
-            'h9',
-        ):
+        if name in ('h5', 'h6', 'h7', 'h8', 'h9',):
             level = name[-1]
             self.xhtmlLines.append(
                 f'<p class="custom_{level}">'
@@ -202,5 +175,3 @@ class NovxToXhtml(sax.ContentHandler):
             self.xhtmlLines.append('<ul>')
             return
 
-        if name == 'li':
-            self.xhtmlLines.append('<li>')
