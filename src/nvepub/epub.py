@@ -15,12 +15,12 @@ import zipfile
 from nvepub.nvepub_globals import EPUB_SUFFIX
 from nvepub.nvepub_locale import _
 from nvepub.stylesheet import STYLESHEET
-from nvlib.model.file.file_export import FileExport
+from nvlib.model.file.file import File
 from nvlib.novx_globals import CH_ROOT
 from nvlib.novx_globals import norm_path
 
 
-class Epub(FileExport):
+class Epub(File):
 
     DESCRIPTION = 'EPUB Ebook'
     EXTENSION = '.epub'
@@ -115,6 +115,7 @@ class Epub(FileExport):
     _chapterTemplate = (
         '<h2 id="$ID">$Title</h2>\n'
     )
+    _epigraphTemplate = '$SectionContent$Desc\n'
     _sectionTemplate = '$SectionContent\n'
     _sectionDivider = '<h4>* * *</h4>\n'
 
@@ -169,6 +170,92 @@ class Epub(FileExport):
         self._tear_down()
         return f'{_("File written")}: "{norm_path(self.filePath)}".'
 
+    def _convert_from_novx(self, text, **kwargs):
+        if text is None:
+            text = ''
+        return(text)
+
+    def _get_sectionMapping(
+            self,
+            scId,
+            firstInChapter=False,
+            isEpigraph=False,
+        ):
+        return {
+            'SectionContent':self._convert_from_novx(
+                self.novel.sections[scId].sectionContent,
+                append=self.novel.sections[scId].appendToPrev,
+                firstInChapter=firstInChapter,
+                isEpigraph=isEpigraph,
+                xml=True,
+            ),
+            'Desc':self._convert_from_novx(
+                self.novel.sections[scId].desc,
+                isEpigraph=isEpigraph,
+                append=self.novel.sections[scId].appendToPrev,
+            ),
+        }
+
+    def _get_sections(
+            self,
+            chId,
+            isEpigraph,
+    ):
+        lines = []
+        firstSectionInChapter = True
+        for scId in self.novel.tree.get_children(chId):
+            template = None
+            sectionContent = self.novel.sections[scId].sectionContent
+            if sectionContent is None:
+                sectionContent = ''
+
+            if self.novel.sections[scId].scType > 1:
+                continue
+
+            elif (
+                self.novel.sections[scId].scType == 1
+                or self.novel.chapters[chId].chType == 1
+            ):
+                # Unused section.
+                isEpigraph = False
+                continue
+
+            else:
+                # Normal section.
+                if isEpigraph:
+                    template = Template(self._epigraphTemplate)
+                else:
+                    template = Template(self._sectionTemplate)
+
+            # Append section divider, if necessary.
+            if not (
+                isEpigraph
+                or firstSectionInChapter
+                or self.novel.sections[scId].appendToPrev
+            ):
+                lines.append(self._sectionDivider)
+
+            # Apply template to any section.
+            tempEpigraph = False
+            tempFirstSection = firstSectionInChapter
+            if isEpigraph:
+                tempEpigraph = True
+                tempFirstSection = False
+            lines.append(
+                template.safe_substitute(
+                    self._get_sectionMapping(
+                        scId,
+                        firstInChapter=tempFirstSection,
+                        isEpigraph=tempEpigraph,
+                    )
+                )
+            )
+            isEpigraph = False
+            if tempFirstSection:
+                firstSectionInChapter = False
+
+        return lines
+
     def _set_up(self):
         # Create and open a temporary directory for the files to zip.
         try:
@@ -221,10 +308,8 @@ class Epub(FileExport):
             )
 
             # Process sections.
-            sectionLines, sectionNumber, wordsTotal = self._get_sections(
+            sectionLines = self._get_sections(
                 chId,
-                sectionNumber,
-                wordsTotal,
                 self.novel.chapters[chId].hasEpigraph,
             )
             lines.extend(sectionLines)
