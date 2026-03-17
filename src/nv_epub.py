@@ -106,7 +106,7 @@ class Plugin(PluginBase):
         EpubFile.novel = self._mdl.novel
         try:
             EpubFile.write()
-        except NotImplementedError as ex:
+        except Exception as ex:
             self._ui.set_status(f'!{str(ex)}')
             return False
 
