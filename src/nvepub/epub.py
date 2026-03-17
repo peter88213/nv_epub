@@ -135,13 +135,13 @@ class Epub(File):
 
     def write(self):
         self._set_up()
+        self._write_file('mimetype', self._MIMETYPE)
         self.uuid = str(uuid.uuid4())
         ChIdsByContentFileNames = self._write_chapters()
         self._write_file(f'OEBPS/styles/style001.css', STYLESHEET)
         self._write_toc_ncx(ChIdsByContentFileNames)
         self._write_content_opf(ChIdsByContentFileNames)
         self._write_file('META-INF/container.xml', self._CONTAINER_XML)
-        self._write_file('mimetype', self._MIMETYPE)
 
         #--- Pack the contents of the temporary directory into the EPUB file.
         workdir = os.getcwd()
@@ -213,19 +213,15 @@ class Epub(File):
     def _get_chapterMapping(self, chId):
         return {
             'ID': chId,
-            'Title': sax.saxutils.escape(
-                self.novel.chapters[chId].title
-            ),
+            'Title': sax.saxutils.escape(self.novel.chapters[chId].title),
+            # 'Language':self.novel.languageCode,
+            # 'Country':self.novel.countryCode,
         }
 
     def _get_frontmatterMapping(self):
         return {
-            'Title': sax.saxutils.escape(
-                self.novel.title,
-            ),
-            'Author': sax.saxutils.escape(
-                self.novel.authorName
-            ),
+            'Title': sax.saxutils.escape(self.novel.title),
+            'Author': sax.saxutils.escape(self.novel.authorName),
         }
 
     def _get_sectionMapping(
