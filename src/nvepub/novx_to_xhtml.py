@@ -14,6 +14,7 @@ class NovxToXhtml(sax.ContentHandler):
         super().__init__()
         self.xhtmlLines = None
         self._indentParagraph = None
+        self._list = None
         self._note = None
         self._comment = None
         self._firstParagraphInChapter = None
@@ -38,6 +39,7 @@ class NovxToXhtml(sax.ContentHandler):
         self._firstParagraphInChapter = firstInChapter
         self._indentParagraph = append and not isEpigraph
         self._isEpigraph = isEpigraph
+        self._list = False
         self._note = False
         self._spanLevel = 0
         self._comment = False
@@ -66,6 +68,9 @@ class NovxToXhtml(sax.ContentHandler):
         Overrides the xml.sax.ContentHandler method     
         """
         if name == 'p':
+            if self._list:
+                return
+
             if self._note:
                 return
 
@@ -78,7 +83,7 @@ class NovxToXhtml(sax.ContentHandler):
             self.xhtmlLines.append('</p>\n')
             return
 
-        if name in ('em', 'strong', 'span', 'li'):
+        if name in ('em', 'strong', 'span'):
             self.xhtmlLines.append(f'</{name}>')
             return
 
@@ -98,6 +103,10 @@ class NovxToXhtml(sax.ContentHandler):
             self._indentParagraph = False
             return
 
+        if name == 'li':
+            self.xhtmlLines.append(f'</{name}>\n')
+            return
+
         if name == 'ul':
             self._list = False
             self._indentParagraph = False
@@ -115,6 +124,9 @@ class NovxToXhtml(sax.ContentHandler):
             xmlAttributes[attrKey] = attrValue
 
         if name == 'p':
+            if self._list:
+                return
+
             if self._note:
                 return
 
@@ -172,6 +184,6 @@ class NovxToXhtml(sax.ContentHandler):
 
         if name == 'ul':
             self._list = True
-            self.xhtmlLines.append('<ul>')
+            self.xhtmlLines.append('<ul>\n')
             return
 
