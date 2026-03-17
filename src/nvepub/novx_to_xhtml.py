@@ -17,6 +17,7 @@ class NovxToXhtml(sax.ContentHandler):
         self._list = None
         self._note = None
         self._comment = None
+        self._quotations = None
         self._firstParagraphInChapter = None
         self._spanLevel = None
 
@@ -39,6 +40,7 @@ class NovxToXhtml(sax.ContentHandler):
         self._firstParagraphInChapter = firstInChapter
         self._indentParagraph = append and not isEpigraph
         self._isEpigraph = isEpigraph
+        self._quotations = False
         self._list = False
         self._note = False
         self._spanLevel = 0
@@ -60,7 +62,7 @@ class NovxToXhtml(sax.ContentHandler):
 
         content = sax.saxutils.escape(content)
         self.xhtmlLines.append(content)
-        self._indentParagraph = True
+        self._indentParagraph = not self._quotations
 
     def endElement(self, name):
         """Signals the end of an element in non-namespace mode.
@@ -80,7 +82,8 @@ class NovxToXhtml(sax.ContentHandler):
             while self._spanLevel > 0:
                 self._spanLevel -= 1
                 self.xhtmlLines.append('</span>')
-            self.xhtmlLines.append('</p>\n')
+            self.xhtmlLines.append('&nbsp;</p>\n')
+            self._quotations = False
             return
 
         if name in ('em', 'strong', 'span'):
@@ -137,6 +140,8 @@ class NovxToXhtml(sax.ContentHandler):
                 self.xhtmlLines.append(f'<p class="epigraph">')
             elif xmlAttributes.get('style', None) == 'quotations':
                 self.xhtmlLines.append('<p class="quotations">')
+                self._quotations = True
+                self._indentParagraph = False
             elif self._firstParagraphInChapter:
                 self.xhtmlLines.append(f'<p class="chapter_beginning">')
             elif self._indentParagraph:

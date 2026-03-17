@@ -27,6 +27,7 @@ p.first_line_indent
     }
 p.quotations
     {
+    text-indent:0em;
     margin-left:2.5em;
     margin-right: 1em;
     }
