@@ -4,7 +4,7 @@
 [![Online help](docs/img/help-button.png)](https://peter88213.github.io/nv_epub/help/)
 
 
-# nv_epub
+# ![EPUB](icons/nv_epub.png) nv_epub
 
 The [novelibre](https://github.com/peter88213/novelibre/) Python program helps authors organize novels.  
 

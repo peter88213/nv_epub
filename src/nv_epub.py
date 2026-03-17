@@ -46,6 +46,7 @@ class Plugin(PluginBase):
         Extends the superclass method.
         """
         super().install(model, view, controller)
+        self._icon = self._get_icon('nv_epub.png')
 
         #--- Configure the main menu.
 
@@ -56,6 +57,8 @@ class Plugin(PluginBase):
         self._ui.exportMenu.insert_command(
             pos,
             label=label,
+            image=self._icon,
+            compound='left',
             command=self._export_epub,
         )
         self._ui.exportMenu.disableOnClose.append(label)
@@ -64,6 +67,8 @@ class Plugin(PluginBase):
         label = _('nv_epub Online help')
         self._ui.helpMenu.add_command(
             label=label,
+            image=self._icon,
+            compound='left',
             command=self.open_help,
         )
 
