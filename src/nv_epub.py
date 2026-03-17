@@ -29,10 +29,11 @@ class Plugin(PluginBase):
     """Template plugin class."""
     VERSION = '@release'
     API_VERSION = '5.53'
-    DESCRIPTION = 'EPUB exporter'
+    DESCRIPTION = 'EPUB e-book exporter'
     URL = 'https://github.com/peter88213/nv_epub'
-
     HELP_URL = 'https://peter88213.github.io/nv_epub/help/'
+
+    FEATURE = f"EPUB {_('e-book')}"
 
     def install(self, model, view, controller):
         """Install the plugin.
@@ -51,7 +52,7 @@ class Plugin(PluginBase):
         # Add an entry to the "Export" menu.
         pos = self._ui.exportMenu.index(_('Options'))
         self._ui.exportMenu.insert_separator(pos)
-        label = f"EPUB {_('Ebook')}"
+        label = self.FEATURE
         self._ui.exportMenu.insert_command(
             pos,
             label=label,
@@ -73,18 +74,29 @@ class Plugin(PluginBase):
         if self._mdl.prjFile.filePath is None:
             return False
 
-        path, __ = os.path.splitext(self._mdl.prjFile.filePath)
-        EpubPath = f'{path}{Epub.SUFFIX}{Epub.EXTENSION}'
-        if os.path.isfile(EpubPath):
+        self._ui.restore_status()
+        self._ui.propertiesView.apply_changes()
+        if self._mdl.isModified:
             if not self._ui.ask_yes_no(
-                message=_('Overwrite existing Ebook?'),
-                detail=norm_path(EpubPath)
+                message=_('Save changes?'),
+                detail=f"{_('There are unsaved changes')}.",
+                title=self.FEATURE,
             ):
                 self._ui.set_status(f'#{_("Action canceled by user")}.')
                 return False
 
-        self._ui.restore_status()
-        self._ui.propertiesView.apply_changes()
+            self._ctrl.save_project()
+        path, __ = os.path.splitext(self._mdl.prjFile.filePath)
+        EpubPath = f'{path}{Epub.SUFFIX}{Epub.EXTENSION}'
+        if os.path.isfile(EpubPath):
+            if not self._ui.ask_yes_no(
+                message=_('Overwrite existing e-book?'),
+                detail=norm_path(EpubPath),
+                title=self.FEATURE,
+            ):
+                self._ui.set_status(f'#{_("Action canceled by user")}.')
+                return False
+
         EpubFile = Epub(EpubPath, version=self.VERSION)
         EpubFile.novel = self._mdl.novel
         try:

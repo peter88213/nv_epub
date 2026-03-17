@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.2.2\n"
 "POT-Creation-Date: 2026-03-15 16:18:14\n"
-"PO-Revision-Date: 2026-03-16 23:20:26\n"
+"PO-Revision-Date: 2026-03-17 12:55:42\n"
 "Last-Translator: Peter Triesberger\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -47,9 +47,6 @@ msgstr "Fertiggestellt"
 msgid "Draft"
 msgstr "Entwurf"
 
-msgid "Ebook"
-msgstr "Ebook"
-
 msgid "Ending"
 msgstr "Ende"
 
@@ -80,8 +77,8 @@ msgstr "Optionen"
 msgid "Outline"
 msgstr "Gliederung"
 
-msgid "Overwrite existing Ebook?"
-msgstr "Das vorhandene Ebook überschreiben?"
+msgid "Overwrite existing e-book?"
+msgstr "Das vorhandene E-Book überschreiben?"
 
 msgid "Peak emotional moment"
 msgstr "Emotionaler Höhepunkt"
@@ -89,8 +86,17 @@ msgstr "Emotionaler Höhepunkt"
 msgid "Plot progress"
 msgstr "Handlungsfortschritt"
 
+msgid "Save changes?"
+msgstr "Änderungen speichern?"
+
+msgid "There are unsaved changes"
+msgstr "Es gibt ungesicherte Änderungen"
+
 msgid "World building"
 msgstr "Weltenbau"
+
+msgid "e-book"
+msgstr "E-Book"
 
 msgid "nv_epub Online help"
 msgstr "nv_epub Online-Hilfe"

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.2.2\n"
-"POT-Creation-Date: 2026-03-16 23:20:26\n"
+"POT-Creation-Date: 2026-03-17 12:55:42\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: LANGUAGE\n"
@@ -47,9 +47,6 @@ msgstr ""
 msgid "Draft"
 msgstr ""
 
-msgid "Ebook"
-msgstr ""
-
 msgid "Ending"
 msgstr ""
 
@@ -80,7 +77,7 @@ msgstr ""
 msgid "Outline"
 msgstr ""
 
-msgid "Overwrite existing Ebook?"
+msgid "Overwrite existing e-book?"
 msgstr ""
 
 msgid "Peak emotional moment"
@@ -89,7 +86,16 @@ msgstr ""
 msgid "Plot progress"
 msgstr ""
 
+msgid "Save changes?"
+msgstr ""
+
+msgid "There are unsaved changes"
+msgstr ""
+
 msgid "World building"
+msgstr ""
+
+msgid "e-book"
 msgstr ""
 
 msgid "nv_epub Online help"

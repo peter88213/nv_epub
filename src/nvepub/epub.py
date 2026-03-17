@@ -24,7 +24,7 @@ from nvlib.novx_globals import norm_path
 
 class Epub(File):
 
-    DESCRIPTION = 'EPUB Ebook'
+    DESCRIPTION = 'EPUB e-book'
     EXTENSION = '.epub'
     SUFFIX = EPUB_SUFFIX
 

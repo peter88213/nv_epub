@@ -33,7 +33,7 @@ Based on novelibre 5.53.0
 
 ### Version 0.1.0
 
-- Creating ebooks that can be read with the Calibre eReader.
+- Creating e-books that can be read with the Calibre eReader.
 
 API: 5.53
 Based on novelibre 5.53.0
