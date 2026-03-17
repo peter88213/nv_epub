@@ -10,6 +10,7 @@ from shutil import rmtree
 from string import Template
 import tempfile
 import uuid
+from xml import sax
 import zipfile
 
 from nvepub.novx_to_xhtml import NovxToXhtml
@@ -212,13 +213,19 @@ class Epub(File):
     def _get_chapterMapping(self, chId):
         return {
             'ID': chId,
-            'Title': self.novel.chapters[chId].title,
+            'Title': sax.saxutils.escape(
+                self.novel.chapters[chId].title
+            ),
         }
 
     def _get_frontmatterMapping(self):
         return {
-            'Title': self.novel.title,
-            'Author': self.novel.authorName,
+            'Title': sax.saxutils.escape(
+                self.novel.title,
+            ),
+            'Author': sax.saxutils.escape(
+                self.novel.authorName
+            ),
         }
 
     def _get_sectionMapping(
@@ -387,9 +394,9 @@ class Epub(File):
             'Uuid': self.uuid,
             'Version': self.version,
             'Date': datetime.date.today().isoformat(),
-            'Author': self.novel.authorName,
+            'Author': sax.saxutils.escape(self.novel.authorName),
             'Language': self.novel.languageCode,
-            'Title': self.novel.title,
+            'Title': sax.saxutils.escape(self.novel.title),
             'Coverpage': 'text/content0001.xhtml'
         }
         contentOpfLines = [
@@ -437,7 +444,7 @@ class Epub(File):
     def _write_toc_ncx(self, ChIdsByContentFileNames):
         ncxMapping = {
             'Uuid': self.uuid,
-            'Title': self.novel.title,
+            'Title': sax.saxutils.escape(self.novel.title),
         }
         tocNcxLines = [
             Template(self._TOC_NCX_HEADER).safe_substitute(ncxMapping),
@@ -453,7 +460,7 @@ class Epub(File):
             navPointMapping = {
                 'NavpointID': f'navPoint-{order}',
                 'Playorder': order,
-                'Title': self.novel.chapters[chId].title,
+                'Title': sax.saxutils.escape(self.novel.chapters[chId].title),
                 'Filename': ContentFileName,
                 'HeadingID': chId,
             }
