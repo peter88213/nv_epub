@@ -5,6 +5,15 @@
 ## Changelog
 
 
+### Version 0.4.0
+
+- Fixed a bug where empty novel or chapter titles may cause an exception.
+- Moved the default css code to an Epub mixin class with a write method. 
+
+API: 5.53
+Based on novelibre 5.53.2
+
+
 ### Version 0.3.1
 
 - Replaced debugging code.

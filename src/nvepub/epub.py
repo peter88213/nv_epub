@@ -16,17 +16,18 @@ import zipfile
 from nvepub.novx_to_xhtml import NovxToXhtml
 from nvepub.nvepub_globals import EPUB_SUFFIX
 from nvepub.nvepub_locale import _
-from nvepub.stylesheet import STYLESHEET
+from nvepub.stylesheet import Stylesheet
 from nvlib.model.file.file import File
 from nvlib.novx_globals import CH_ROOT
 from nvlib.novx_globals import norm_path
 
 
-class Epub(File):
+class Epub(File, Stylesheet):
 
     DESCRIPTION = 'EPUB e-book'
     EXTENSION = '.epub'
     SUFFIX = EPUB_SUFFIX
+    CSS_NAME = 'nv_epub.css'
 
     _MIMETYPE = 'application/epub+zip'
     _CONTAINER_XML = (
@@ -101,7 +102,7 @@ class Epub(File):
         '<html xmlns="http://www.w3.org/1999/xhtml">\n'
         '<head>\n'
         '<link rel="stylesheet" '
-        'href="../styles/style001.css" type="text/css" />\n'
+        'href="../styles/$Stylesheet" type="text/css" />\n'
         '<title>$Title</title>\n'
         '</head>\n'
         '<body>\n'
@@ -135,13 +136,13 @@ class Epub(File):
 
     def write(self):
         self._set_up()
-        self._write_file('mimetype', self._MIMETYPE)
+        self.write_file('mimetype', self._MIMETYPE)
         self.uuid = str(uuid.uuid4())
         ChIdsByContentFileNames = self._write_chapters()
-        self._write_file(f'OEBPS/styles/style001.css', STYLESHEET)
+        self.write_css('OEBPS/styles', self.CSS_NAME)
         self._write_toc_ncx(ChIdsByContentFileNames)
         self._write_content_opf(ChIdsByContentFileNames)
-        self._write_file('META-INF/container.xml', self._CONTAINER_XML)
+        self.write_file('META-INF/container.xml', self._CONTAINER_XML)
 
         #--- Pack the contents of the temporary directory into the EPUB file.
         workdir = os.getcwd()
@@ -174,6 +175,18 @@ class Epub(File):
         os.chdir(workdir)
         self._tear_down()
         return f'{_("File written")}: "{norm_path(self.filePath)}".'
+
+    def write_file(self, localPath, content):
+        self._epubComponents.append(localPath)
+        try:
+            with open(
+                f'{self._tempDir}/{localPath}',
+                'w',
+                encoding='utf-8'
+            ) as f:
+                f.write(content)
+        except:
+            raise RuntimeError(f'{_("Cannot write file")}: "{self._tempDir}/{localPath}"')
 
     def _convert_from_novx(self, text, **kwargs):
         append = kwargs.get('append', False)
@@ -210,18 +223,26 @@ class Epub(File):
         )
         return(text)
 
+    def _escape_string(self, text):
+        if text is None:
+            return ''
+
+        return sax.saxutils.escape(text)
+
     def _get_chapterMapping(self, chId):
         return {
             'ID': chId,
-            'Title': sax.saxutils.escape(self.novel.chapters[chId].title),
+            'Title': self._escape_string(self.novel.chapters[chId].title),
+            'Stylesheet': self.CSS_NAME,
             # 'Language':self.novel.languageCode,
             # 'Country':self.novel.countryCode,
         }
 
     def _get_frontmatterMapping(self):
         return {
-            'Title': sax.saxutils.escape(self.novel.title),
-            'Author': sax.saxutils.escape(self.novel.authorName),
+            'Title': self._escape_string(self.novel.title),
+            'Author': self._escape_string(self.novel.authorName),
+            'Stylesheet': self.CSS_NAME,
         }
 
     def _get_sectionMapping(
@@ -336,7 +357,7 @@ class Epub(File):
         def write_file(contentIndex, text, chId):
             contentFileName = f'content{contentIndex:04}.xhtml'
             ChIdsByContentFileNames[contentFileName] = chId
-            self._write_file(f'OEBPS/text/{contentFileName}', text)
+            self.write_file(f'OEBPS/text/{contentFileName}', text)
 
         contentIndex = 0
         ChIdsByContentFileNames = {}
@@ -390,9 +411,9 @@ class Epub(File):
             'Uuid': self.uuid,
             'Version': self.version,
             'Date': datetime.date.today().isoformat(),
-            'Author': sax.saxutils.escape(self.novel.authorName),
+            'Author': self._escape_string(self.novel.authorName),
             'Language': self.novel.languageCode,
-            'Title': sax.saxutils.escape(self.novel.title),
+            'Title': self._escape_string(self.novel.title),
             'Coverpage': 'text/content0001.xhtml'
         }
         contentOpfLines = [
@@ -404,8 +425,8 @@ class Epub(File):
             'media-type="application/x-dtbncx+xml"/>'
         )
         contentOpfLines.append(
-            '        <item id="style001.css" '
-            'href="styles/style001.css" media-type="text/css"/>'
+            f'        <item id="{self.CSS_NAME}" '
+            f'href="styles/{self.CSS_NAME}" media-type="text/css"/>'
         )
         for fileName in ChIdsByContentFileNames:
             contentOpfLines.append(
@@ -423,24 +444,12 @@ class Epub(File):
         contentOpfLines.append(
             Template(self._CONTENT_OPF_FOOTER).safe_substitute(opfMapping),
         )
-        self._write_file(f'OEBPS/content.opf', '\n'.join(contentOpfLines))
-
-    def _write_file(self, localPath, content):
-        self._epubComponents.append(localPath)
-        try:
-            with open(
-                f'{self._tempDir}/{localPath}',
-                'w',
-                encoding='utf-8'
-            ) as f:
-                f.write(content)
-        except:
-            raise RuntimeError(f'{_("Cannot write file")}: "{self._tempDir}/{localPath}"')
+        self.write_file(f'OEBPS/content.opf', '\n'.join(contentOpfLines))
 
     def _write_toc_ncx(self, ChIdsByContentFileNames):
         ncxMapping = {
             'Uuid': self.uuid,
-            'Title': sax.saxutils.escape(self.novel.title),
+            'Title': self._escape_string(self.novel.title),
         }
         tocNcxLines = [
             Template(self._TOC_NCX_HEADER).safe_substitute(ncxMapping),
@@ -456,7 +465,7 @@ class Epub(File):
             navPointMapping = {
                 'NavpointID': f'navPoint-{order}',
                 'Playorder': order,
-                'Title': sax.saxutils.escape(self.novel.chapters[chId].title),
+                'Title': self._escape_string(self.novel.chapters[chId].title),
                 'Filename': ContentFileName,
                 'HeadingID': chId,
             }
@@ -466,4 +475,4 @@ class Epub(File):
         tocNcxLines.append(
             Template(self._TOC_NCX_FOOTER).safe_substitute(ncxMapping),
         )
-        self._write_file(f'OEBPS/toc.ncx', '\n'.join(tocNcxLines))
+        self.write_file(f'OEBPS/toc.ncx', '\n'.join(tocNcxLines))

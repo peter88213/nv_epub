@@ -1,4 +1,14 @@
-STYLESHEET = '''@namespace h "http://www.w3.org/1999/xhtml";
+"""Provide an Epub mixin class for css stylesheet representation.
+
+Copyright (c) Peter Triesberger
+For further information see https://github.com/peter88213/nv_epub
+License: GNU GPLv3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
+"""
+
+
+class Stylesheet:
+
+    DEFAULT_CSS = '''@namespace h "http://www.w3.org/1999/xhtml";
 @page
     {
     margin: 5pt;
@@ -138,3 +148,6 @@ p.custom_6, .custom_7, .custom_8, .custom_9
     text-indent:0em;
     }
 '''
+
+    def write_css(self, dirName, fileName):
+        self.write_file(f'{dirName}/{fileName}', self.DEFAULT_CSS)
