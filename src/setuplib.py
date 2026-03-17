@@ -62,6 +62,10 @@ def install(zipped):
         print('Copying locale ...')
         copy_tree('locale', applicationDir)
 
+        # Install the icons.
+        print('Copying icons ...')
+        copy_tree('icons', applicationDir)
+
         # Show a success message.
         print(
             f'\nSucessfully installed {PLUGIN} '

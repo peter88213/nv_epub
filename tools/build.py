@@ -12,7 +12,7 @@ import sys
 sys.path.insert(0, f'{os.getcwd()}/../../novelibre/tools')
 from package_builder import PackageBuilder
 
-VERSION = '0.2.2'
+VERSION = '0.3.0'
 
 
 class PluginBuilder(PackageBuilder):
@@ -20,6 +20,9 @@ class PluginBuilder(PackageBuilder):
     PRJ_NAME = 'nv_epub'
     LOCAL_LIB = 'nvepub'
     GERMAN_TRANSLATION = True
+
+    def add_extras(self):
+        self.add_icons()
 
 
 def main():
