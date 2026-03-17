@@ -102,7 +102,11 @@ class Plugin(PluginBase):
                 self._ui.set_status(f'#{_("Action canceled by user")}.')
                 return False
 
-        EpubFile = Epub(EpubPath, version=self.VERSION)
+        EpubFile = Epub(
+            EpubPath,
+            version=self.VERSION,
+            prjDir=os.path.dirname(self._mdl.prjFile.filePath),
+        )
         EpubFile.novel = self._mdl.novel
         try:
             EpubFile.write()

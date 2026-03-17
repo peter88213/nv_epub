@@ -130,6 +130,7 @@ class Epub(File, Stylesheet):
         self.version = kwargs['version']
         self.uuid = None
         self._tempDir = tempfile.mkdtemp(suffix='.tmp', prefix='nv_epub_')
+        self.prjDir = kwargs['prjDir']
         self._epubComponents = []
         self._ChIdsByContentFileNames = []
         self._contentParser = NovxToXhtml()
@@ -139,7 +140,7 @@ class Epub(File, Stylesheet):
         self.write_file('mimetype', self._MIMETYPE)
         self.uuid = str(uuid.uuid4())
         ChIdsByContentFileNames = self._write_chapters()
-        self.write_css('OEBPS/styles', self.CSS_NAME)
+        self.write_css()
         self._write_toc_ncx(ChIdsByContentFileNames)
         self._write_content_opf(ChIdsByContentFileNames)
         self.write_file('META-INF/container.xml', self._CONTAINER_XML)

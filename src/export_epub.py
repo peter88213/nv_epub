@@ -4,6 +4,7 @@ Copyright (c) Peter Triesberger
 For further information see https://github.com/peter88213/nv_epub
 License: GNU GPLv3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
 """
+import os
 import sys
 
 from nvepub.epub import Epub
@@ -22,6 +23,7 @@ def run(sourcePath, suffix=''):
     kwargs = {
         'suffix': suffix,
         'version':'0.0',
+        'prjDir': os.path.dirname(sourcePath),
     }
     converter.run(sourcePath, **kwargs)
     ui.start()

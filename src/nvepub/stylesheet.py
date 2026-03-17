@@ -4,6 +4,7 @@ Copyright (c) Peter Triesberger
 For further information see https://github.com/peter88213/nv_epub
 License: GNU GPLv3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
 """
+import os
 
 
 class Stylesheet:
@@ -149,5 +150,11 @@ p.custom_6, .custom_7, .custom_8, .custom_9
     }
 '''
 
-    def write_css(self, dirName, fileName):
-        self.write_file(f'{dirName}/{fileName}', self.DEFAULT_CSS)
+    def write_css(self):
+        prjCssPath = os.path.join(self.prjDir, self.CSS_NAME)
+        try:
+            with open(prjCssPath, 'r', encoding='utf-8') as f:
+                css = f.read()
+        except:
+            css = self.DEFAULT_CSS
+        self.write_file(f'OEBPS/styles/{self.CSS_NAME}', css)
