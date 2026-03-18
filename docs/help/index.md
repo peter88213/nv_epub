@@ -38,11 +38,13 @@ Just place your stylesheet named `nv_epub.css` in the project directory.
 | **p.text_body**         | **Text body**                                   | Section's first Paragraph, if not beginning a chapter. |
 | **p.first_line_indent** | **First line indent**                           | Regular paragraph.                                     |
 | **p.quotations**        | **Quotations** (OO) / **Block Quotations** (LO) | Paragraph visually distinguished from the body text.   |
-| **p.custom_5**          | **Heading 5**                                   | Paragraphs visually distinguished from the body text.  |
-| **p.custom_6**          | **Heading 6**                                   | Paragraphs visually distinguished from the body text.  |
-| **p.custom_7**          | **Heading 7**                                   | Paragraphs visually distinguished from the body text.  |
-| **p.custom_8**          | **Heading 8**                                   | Paragraphs visually distinguished from the body text.  |
-| **p.custom_9**          | **Heading 9**                                   | Paragraphs visually distinguished from the body text.  |
+| **p.custom_5**          | **Heading 5**                                   | Paragraph visually distinguished from the body text.   |
+| **p.custom_6**          | **Heading 6**                                   | Paragraph visually distinguished from the body text.   |
+| **p.custom_7**          | **Heading 7**                                   | Paragraph visually distinguished from the body text.   |
+| **p.custom_8**          | **Heading 8**                                   | Paragraph visually distinguished from the body text.   |
+| **p.custom_9**          | **Heading 9**                                   | Paragraph visually distinguished from the body text.   |
+| **ul**                  | (N/A)                                           | Unordered list (enclosing list elements).              |
+| **li**                  | (**First line indent** is applied)              | List element paragraph.                                |
 | **em**                  | **Emphasis**                                    | Emphasized text.                                       | 
 | **strong**              | **Strong emphasis**                             | Strongly emphasized text.                              | 
 
