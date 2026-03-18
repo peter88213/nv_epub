@@ -12,11 +12,13 @@ class NovxToXhtml(sax.ContentHandler):
 
     def __init__(self):
         super().__init__()
-        self.xhtmlLines = None
+        self._noteLines = []
+        self.xhtmlLines = []
+        self.footnotes = []
         self._indentParagraph = None
         self._list = None
         self._note = None
-        self._comment = None
+        self._skipElement = None
         self._quotations = None
         self._firstParagraphInChapter = None
 
@@ -42,8 +44,10 @@ class NovxToXhtml(sax.ContentHandler):
         self._quotations = False
         self._list = False
         self._note = False
-        self._comment = False
-        self.xhtmlLines = []
+        self._skipElement = False
+        self._noteLines.clear()
+        self.xhtmlLines.clear()
+        self.footnotes.clear()
         if xmlString:
             sax.parseString(f'<content>{xmlString}</content>', self)
 
@@ -52,44 +56,48 @@ class NovxToXhtml(sax.ContentHandler):
         
         Overrides the xml.sax.ContentHandler method             
         """
-        if self._comment:
-            return
-
-        if self._note:
+        if self._skipElement:
             return
 
         content = sax.saxutils.escape(content)
-        self.xhtmlLines.append(content)
-        self._indentParagraph = not self._quotations
+        if self._note:
+            self._noteLines.append(content)
+        else:
+            self.xhtmlLines.append(content)
+            self._indentParagraph = not self._quotations
 
     def endElement(self, name):
         """Signals the end of an element in non-namespace mode.
         
         Overrides the xml.sax.ContentHandler method     
         """
+        if name in ('comment', 'note-citation'):
+            self._skipElement = False
+            return
+
+        if self._skipElement:
+            return
+
+        if self._note:
+            lines = self._noteLines
+        else:
+            lines = self.xhtmlLines
+
         if name == 'p':
             if self._list:
                 return
 
-            if self._note:
-                return
-
-            if self._comment:
-                return
-
-            self.xhtmlLines.append('&nbsp;</p>\n')
+            lines.append('&nbsp;</p>\n')
             self._quotations = False
             return
 
         if name in ('em', 'strong', 'span'):
-            self.xhtmlLines.append(f'</{name}>')
-            return
-
-        if name == 'comment':
-            self._comment = False
+            lines.append(f'</{name}>')
             return
 
         if name == 'note':
+            self.footnotes.append(''.join(self._noteLines))
+            self._noteLines.clear()
             self._note = False
             return
 
@@ -113,6 +121,9 @@ class NovxToXhtml(sax.ContentHandler):
         
         Overrides the xml.sax.ContentHandler method             
         """
+        if self._skipElement:
+            return
+
         xmlAttributes = {}
         for attribute in attrs.items():
             attrKey, attrValue = attribute
@@ -123,43 +134,44 @@ class NovxToXhtml(sax.ContentHandler):
         else:
             lang = ''
 
+        if self._note:
+            lines = self._noteLines
+        else:
+            lines = self.xhtmlLines
+
         if name == 'p':
             if self._list:
                 return
 
             if self._note:
-                return
-
-            if self._comment:
-                return
-
-            if self._isEpigraph:
-                self.xhtmlLines.append(f'<p class="epigraph"{lang}>')
+                lines.append(f'<p{lang}>')
+            elif self._isEpigraph:
+                lines.append(f'<p class="epigraph"{lang}>')
             elif xmlAttributes.get('style', None) == 'quotations':
-                self.xhtmlLines.append(f'<p class="quotations"{lang}>')
+                lines.append(f'<p class="quotations"{lang}>')
                 self._quotations = True
                 self._indentParagraph = False
             elif self._firstParagraphInChapter:
-                self.xhtmlLines.append(f'<p class="chapter_beginning"{lang}>')
+                lines.append(f'<p class="chapter_beginning"{lang}>')
             elif self._indentParagraph:
-                self.xhtmlLines.append(f'<p class="first_line_indent"{lang}>')
+                lines.append(f'<p class="first_line_indent"{lang}>')
             else:
-                self.xhtmlLines.append(f'<p class="text_body"{lang}>')
+                lines.append(f'<p class="text_body"{lang}>')
             if not self._isEpigraph:
                 self._firstParagraphInChapter = False
                 self._indentParagraph = False
             return
 
         if name in ('em', 'strong', 'li'):
-            self.xhtmlLines.append(f'<{name}>')
+            lines.append(f'<{name}>')
             return
 
         if name == 'span':
-            self.xhtmlLines.append(f'<span{lang}>')
+            lines.append(f'<span{lang}>')
             return
 
-        if name == 'comment':
-            self._comment = True
+        if name in ('comment', 'note-citation'):
+            self._skipElement = True
             return
 
         if name == 'note':
@@ -168,13 +180,13 @@ class NovxToXhtml(sax.ContentHandler):
 
         if name in ('h5', 'h6', 'h7', 'h8', 'h9',):
             level = name[-1]
-            self.xhtmlLines.append(
+            lines.append(
                 f'<p class="custom_{level}{lang}">'
             )
             return
 
         if name == 'ul':
             self._list = True
-            self.xhtmlLines.append('<ul>\n')
+            lines.append('<ul>\n')
             return
 

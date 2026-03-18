@@ -214,6 +214,7 @@ class Epub(File, Stylesheet):
                 firstInChapter,
                 isEpigraph,
             )
+            print(self._contentParser.footnotes)
             return ''.join(self._contentParser.xhtmlLines)
 
         # Convert plain text into XML.
