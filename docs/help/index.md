@@ -22,7 +22,7 @@ File name suffix is `_ebook`.
 Just place your stylesheet named `nv_epub.css` in the project directory.
 
 
-### XHTML entities used with the EPUB created with *nv_epub*
+### XHTML elements used with the EPUB created by *nv_epub*
 
 | XHTML                   | *Writer* style name                             | Description                                            |
 |-------------------------|-------------------------------------------------|--------------------------------------------------------|
@@ -35,7 +35,7 @@ Just place your stylesheet named `nv_epub.css` in the project directory.
 | **p.epigraph**          | **Epigraph**                                    | Epigraph body.                                         |
 | **p.epigraph_source**   | **Epigraph source**                             | The epigraph's source, if any.                         |
 | **p.chapter_beginning** | **Chapter beginning**                           | Chapter's first paragraph.                             |
-| **p.text_body**         | **Text body**                                   | Section's first Paragraph, if not beginning a chapter. |
+| **p.text_body**         | **Text body**                                   | Section's first paragraph, if not beginning a chapter. |
 | **p.first_line_indent** | **First line indent**                           | Regular paragraph.                                     |
 | **p.quotations**        | **Quotations** (OO) / **Block Quotations** (LO) | Paragraph visually distinguished from the body text.   |
 | **p.custom_5**          | **Heading 5**                                   | Paragraph visually distinguished from the body text.   |
