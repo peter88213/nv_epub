@@ -31,7 +31,7 @@ Just place your stylesheet named `nv_epub.css` in the project directory.
 | **h1**                  | **Heading 1**                                   | Part heading.                                          |
 | **h2**                  | **Heading 2**                                   | Chapter heading.                                       |
 | **h4**                  | **Heading 4**                                   | Section divider.                                       |
-| **p**                   | **Default paragraph style**                     |(Not explicitly applied)                                |
+| **p**                   | **Default paragraph style**                     | (Not explicitly applied)                               |
 | **p.title**             | **Title**                                       | Novel title.                                           |
 | **p.author**            | **Subtitle**                                    | Author.                                                |
 | **p.epigraph**          | **Epigraph**                                    | Epigraph body.                                         |
