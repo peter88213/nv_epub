@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.4.0\n"
-"POT-Creation-Date: 2026-03-17 22:26:30\n"
+"POT-Creation-Date: 2026-03-18 15:49:05\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: LANGUAGE\n"
@@ -45,6 +45,9 @@ msgid "Done"
 msgstr ""
 
 msgid "Draft"
+msgstr ""
+
+msgid "EPUB export plugin Online help"
 msgstr ""
 
 msgid "Ending"
@@ -96,7 +99,4 @@ msgid "World building"
 msgstr ""
 
 msgid "e-book"
-msgstr ""
-
-msgid "nv_epub Online help"
 msgstr ""

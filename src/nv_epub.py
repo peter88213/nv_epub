@@ -64,7 +64,7 @@ class Plugin(PluginBase):
         self._ui.exportMenu.disableOnClose.append(label)
 
         # Add an entry to the Help menu.
-        label = _('nv_epub Online help')
+        label = _('EPUB export plugin Online help')
         self._ui.helpMenu.add_command(
             label=label,
             image=self._icon,

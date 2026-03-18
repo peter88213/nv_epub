@@ -9,14 +9,14 @@ import sys
 
 from nvepub.epub import Epub
 from nvepub.nvepub_globals import EPUB_SUFFIX
-from nvlib.alternative_ui.ui_tk import UiTk
+from nvlib.alternative_ui.ui_cmd import UiCmd
 from testlib.novx_converter import NovxConverter
 
 SUFFIX = EPUB_SUFFIX
 
 
 def run(sourcePath, suffix=''):
-    ui = UiTk('novelibre export')
+    ui = UiCmd('novelibre export')
     converter = NovxConverter()
     converter.EXPORT_TARGET_CLASSES.append(Epub)
     converter.ui = ui

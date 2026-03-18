@@ -98,5 +98,5 @@ msgstr "Weltenbau"
 msgid "e-book"
 msgstr "E-Book"
 
-msgid "nv_epub Online help"
-msgstr "nv_epub Online-Hilfe"
+msgid "EPUB export plugin Online help"
+msgstr "EPUB-Export-Plugin Online-Hilfe"
