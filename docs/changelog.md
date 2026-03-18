@@ -5,6 +5,15 @@
 ## Changelog
 
 
+### Version 0.5.0
+
+- Supporting custom stylesheets placed in the project directory. 
+- Removed unused styles from the css stylesheet.
+
+API: 5.53
+Based on novelibre 5.53.2
+
+
 ### Version 0.4.0
 
 - Fixed a bug where empty novel or chapter titles may cause an exception.
