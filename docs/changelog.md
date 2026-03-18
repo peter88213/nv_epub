@@ -5,6 +5,14 @@
 ## Changelog
 
 
+### Version 0.5.1
+
+- Revised the NovxToXml parser.
+
+API: 5.53
+Based on novelibre 5.53.2
+
+
 ### Version 0.5.0
 
 - Supporting custom stylesheets placed in the project directory. 
