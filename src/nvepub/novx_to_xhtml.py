@@ -19,7 +19,6 @@ class NovxToXhtml(sax.ContentHandler):
         self._comment = None
         self._quotations = None
         self._firstParagraphInChapter = None
-        self._spanLevel = None
 
     def feed(
         self,
@@ -43,7 +42,6 @@ class NovxToXhtml(sax.ContentHandler):
         self._quotations = False
         self._list = False
         self._note = False
-        self._spanLevel = 0
         self._comment = False
         self.xhtmlLines = []
         if xmlString:
@@ -79,9 +77,6 @@ class NovxToXhtml(sax.ContentHandler):
             if self._comment:
                 return
 
-            while self._spanLevel > 0:
-                self._spanLevel -= 1
-                self.xhtmlLines.append('</span>')
             self.xhtmlLines.append('&nbsp;</p>\n')
             self._quotations = False
             return
@@ -99,9 +94,6 @@ class NovxToXhtml(sax.ContentHandler):
             return
 
         if name in ('h5', 'h6', 'h7', 'h8', 'h9',):
-            while self._spanLevel > 0:
-                self._spanLevel -= 1
-                self.xhtmlLines.append('</span>')
             self.xhtmlLines.append('</p>\n')
             self._indentParagraph = False
             return
@@ -125,6 +117,11 @@ class NovxToXhtml(sax.ContentHandler):
         for attribute in attrs.items():
             attrKey, attrValue = attribute
             xmlAttributes[attrKey] = attrValue
+        language = xmlAttributes.get('xml:lang', None)
+        if language:
+            lang = f' xml:lang="{language}"'
+        else:
+            lang = ''
 
         if name == 'p':
             if self._list:
@@ -137,25 +134,20 @@ class NovxToXhtml(sax.ContentHandler):
                 return
 
             if self._isEpigraph:
-                self.xhtmlLines.append(f'<p class="epigraph">')
+                self.xhtmlLines.append(f'<p class="epigraph"{lang}>')
             elif xmlAttributes.get('style', None) == 'quotations':
-                self.xhtmlLines.append('<p class="quotations">')
+                self.xhtmlLines.append(f'<p class="quotations"{lang}>')
                 self._quotations = True
                 self._indentParagraph = False
             elif self._firstParagraphInChapter:
-                self.xhtmlLines.append(f'<p class="chapter_beginning">')
+                self.xhtmlLines.append(f'<p class="chapter_beginning"{lang}>')
             elif self._indentParagraph:
-                self.xhtmlLines.append('<p class="first_line_indent">')
+                self.xhtmlLines.append(f'<p class="first_line_indent"{lang}>')
             else:
-                self.xhtmlLines.append('<p class="text_body">')
+                self.xhtmlLines.append(f'<p class="text_body"{lang}>')
             if not self._isEpigraph:
                 self._firstParagraphInChapter = False
                 self._indentParagraph = False
-
-            language = xmlAttributes.get('xml:lang', None)
-            if language:
-                self.xhtmlLines.append(f'<span xml:lang="{language}">')
-                self._spanLevel += 1
             return
 
         if name in ('em', 'strong', 'li'):
@@ -163,9 +155,7 @@ class NovxToXhtml(sax.ContentHandler):
             return
 
         if name == 'span':
-            language = xmlAttributes.get('xml:lang', None)
-            if language:
-                self.xhtmlLines.append(f'<span xml:lang="{language}">')
+            self.xhtmlLines.append(f'<span{lang}>')
             return
 
         if name == 'comment':
@@ -179,12 +169,8 @@ class NovxToXhtml(sax.ContentHandler):
         if name in ('h5', 'h6', 'h7', 'h8', 'h9',):
             level = name[-1]
             self.xhtmlLines.append(
-                f'<p class="custom_{level}">'
+                f'<p class="custom_{level}{lang}">'
             )
-            language = xmlAttributes.get('xml:lang', None)
-            if language:
-                self.xhtmlLines.append(f'<span xml:lang="{language}">')
-                self._spanLevel += 1
             return
 
         if name == 'ul':
