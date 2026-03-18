@@ -9,10 +9,12 @@ This page refers to the latest
 open it with **Help \> nv_epub Online help**.
 
 
-## Export an EPUB e-book from the current *novelibre* project
+---
 
-*novelibre* main menu| **Export \> EPUB e-book** creates an *.epub* file
-with the *novelibre* project\'s name in the project directory.
+## Export an e-book
+
+**Export > EPUB e-book** creates an *.epub* file
+with the *novelibre* project's name in the project directory.
 File name suffix is `_ebook`.
 
 ---
