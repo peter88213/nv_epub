@@ -95,6 +95,15 @@ class Epub(File, Stylesheet):
         '    </navMap>\n'
         '</ncx>\n'
     )
+    _FOOTNOTE_LINK = (
+        '<a href="footnotes.xhtml#footnote-$IndexStr"><sup>$Index</sup></a>'
+        '<a id="fnreturn-$IndexStr"></a>'
+    )
+    _FOOTNOTE = (
+        '<div class="footnote" id="footnote-$IndexStr">$Index)'
+        '<p class="fnparagraph">$Text&nbsp; <a href="$Page#fnreturn-$IndexStr"> '
+        '<strong>&#x21B5;</strong></a></p></div>'
+    )
     _fileHeader = (
         '<?xml version="1.0" encoding="utf-8"?>\n'
         '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n'
@@ -237,6 +246,15 @@ class Epub(File, Stylesheet):
             'Stylesheet': self.CSS_NAME,
             # 'Language':self.novel.languageCode,
             # 'Country':self.novel.countryCode,
+        }
+
+    def _get_footnoteMapping(self, footnoteIndex, ContentFileName, text):
+        index = str(footnoteIndex)
+        return {
+            'Page': ContentFileName,
+            'Index': index,
+            'IndexStr': index.zfill(4),
+            'Text': text,
         }
 
     def _get_frontmatterMapping(self):
