@@ -19,15 +19,19 @@ File name suffix is `_ebook`.
 
 ---
 
-## Provide a cover image (optional)
+## How to provide a cover image (optional)
 
-Just place your JPEG cover named `cover.jpg` in the project directory.
+By default, the first page, which includes the title and author, is used as the cover image. 
+However, if you have a suitable cover image in JPEG format, you can save it in the project 
+directory with the filename `cover.jpg`. *nv_epub* will then incorporate it. 
 
 ---
 
-## Use a custom css stylesheet
+## How to provide a custom css stylesheet (optional)
 
-Just place your stylesheet named `nv_epub.css` in the project directory.
+*nv_epub* generates a stylesheet containing all the necessary style classes. 
+If you don't like the default stylesheet, you can provide your own. 
+Save it in the project directory with the filename `nv_epub.css`. 
 
 
 ### XHTML elements used with the EPUB created by *nv_epub*
