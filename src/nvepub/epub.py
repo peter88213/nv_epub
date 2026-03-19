@@ -95,14 +95,13 @@ class Epub(File, Stylesheet):
         '    </navMap>\n'
         '</ncx>\n'
     )
-    _FOOTNOTE_LINK = (
-        '<a href="footnotes.xhtml#footnote-$IndexStr"><sup>$Index</sup></a>'
-        '<a id="fnreturn-$IndexStr"></a>'
-    )
     _FOOTNOTE = (
-        '<div class="footnote" id="footnote-$IndexStr">$Index)'
-        '<p class="fnparagraph">$Text&nbsp; <a href="$Page#fnreturn-$IndexStr"> '
-        '<strong>&#x21B5;</strong></a></p></div>'
+        '<div class="footnote" id="footnote-$NoteIndex">\n'
+        '<p class="fnparagraph">'
+        '$Text&nbsp; '
+        '<a href="$Page#fnreturn-$NoteIndex"><strong>&#x21B5;</strong></a>'
+        '</p>\n'
+        '</div>\n'
     )
     _fileHeader = (
         '<?xml version="1.0" encoding="utf-8"?>\n'
@@ -213,8 +212,8 @@ class Epub(File, Stylesheet):
                 append,
                 firstInChapter,
                 isEpigraph,
+                kwargs['pageIndex'],
             )
-            print(self._contentParser.footnotes)
             return ''.join(self._contentParser.xhtmlLines)
 
         # Convert plain text into XML.
@@ -245,16 +244,12 @@ class Epub(File, Stylesheet):
             'ID': chId,
             'Title': self._escape_string(self.novel.chapters[chId].title),
             'Stylesheet': self.CSS_NAME,
-            # 'Language':self.novel.languageCode,
-            # 'Country':self.novel.countryCode,
         }
 
-    def _get_footnoteMapping(self, footnoteIndex, ContentFileName, text):
-        index = str(footnoteIndex)
+    def _get_footnoteMapping(self, noteIndex, ContentFileName, text):
         return {
             'Page': ContentFileName,
-            'Index': index,
-            'IndexStr': index.zfill(4),
+            'NoteIndex': noteIndex,
             'Text': text,
         }
 
@@ -268,6 +263,7 @@ class Epub(File, Stylesheet):
     def _get_sectionMapping(
             self,
             scId,
+            pageIndex,
             firstInChapter=False,
             isEpigraph=False,
         ):
@@ -278,6 +274,7 @@ class Epub(File, Stylesheet):
                 firstInChapter=firstInChapter,
                 isEpigraph=isEpigraph,
                 xml=True,
+                pageIndex=pageIndex,
             ),
             'Desc':self._convert_from_novx(
                 self.novel.sections[scId].desc,
@@ -289,6 +286,7 @@ class Epub(File, Stylesheet):
     def _get_sections(
             self,
             chId,
+            pageIndex,
             isEpigraph,
     ):
         lines = []
@@ -335,6 +333,7 @@ class Epub(File, Stylesheet):
                 template.safe_substitute(
                     self._get_sectionMapping(
                         scId,
+                        pageIndex,
                         firstInChapter=tempFirstSection,
                         isEpigraph=tempEpigraph,
                     )
@@ -374,12 +373,12 @@ class Epub(File, Stylesheet):
         Return a list of file names.
         """
 
-        def write_file(contentIndex, text, chId):
-            contentFileName = f'content{contentIndex:04}.xhtml'
+        def write_file(pageIndex, text, chId):
+            contentFileName = f'content{pageIndex:04}.xhtml'
             ChIdsByContentFileNames[contentFileName] = chId
             self.write_file(f'OEBPS/text/{contentFileName}', text)
 
-        contentIndex = 0
+        pageIndex = 0
         ChIdsByContentFileNames = {}
         contentIds = ['frontmatter']
         contentIds.extend(self.novel.tree.get_children(CH_ROOT))
@@ -407,10 +406,11 @@ class Epub(File, Stylesheet):
                     template.safe_substitute(mapping)
                 )
 
-                # Process sections.
+                #--- Process sections.
                 lines.extend(
                     self._get_sections(
                         chId,
+                        pageIndex + 1,
                         self.novel.chapters[chId].hasEpigraph,
                     )
                 )
@@ -421,8 +421,28 @@ class Epub(File, Stylesheet):
                 mapping
             )
             text = f'{fileHeader}{"".join(lines)}{self._fileFooter}'
-            contentIndex += 1
-            write_file(contentIndex, text, chId)
+            pageIndex += 1
+            write_file(pageIndex, text, chId)
+
+        #--- Write footnotes, if any.
+        if self._contentParser.footnotes:
+            lines = []
+            for i, footnote in enumerate(self._contentParser.footnotes):
+                pageIndex, text = footnote
+                noteIndex = i + 1
+                mapping = self._get_footnoteMapping(
+                    f'{noteIndex:04}',
+                    f'content{pageIndex:04}.xhtml',
+                    text,
+                )
+                lines.append(
+                    Template(self._FOOTNOTE).safe_substitute(mapping)
+                )
+            fileHeader = Template(self._fileHeader).safe_substitute(
+                {'Title': 'Footnotes', 'Stylesheet': self.CSS_NAME, }
+            )
+            text = f'{fileHeader}{"".join(lines)}{self._fileFooter}'
+            self.write_file(f'OEBPS/text/footnotes.xhtml', text)
 
         return ChIdsByContentFileNames
 
@@ -454,11 +474,21 @@ class Epub(File, Stylesheet):
                 'media-type="application/xhtml+xml"/>'
 
             )
+        if self._contentParser.footnotes:
+            contentOpfLines.append(
+                '        <item id="footnotes.xhtml" '
+                'href="text/footnotes.xhtml" '
+                'media-type="application/xhtml+xml"/>'
+            )
         contentOpfLines.append('    </manifest>')
         contentOpfLines.append('    <spine toc="ncx">')
         for fileName in ChIdsByContentFileNames:
             contentOpfLines.append(
                 f'       <itemref idref="{fileName}"/>'
+            )
+        if self._contentParser.footnotes:
+            contentOpfLines.append(
+                '       <itemref idref="footnotes.xhtml" linear="no"/>'
             )
         contentOpfLines.append('    </spine>')
         contentOpfLines.append(

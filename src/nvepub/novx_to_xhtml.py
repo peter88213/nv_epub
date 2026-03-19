@@ -28,6 +28,7 @@ class NovxToXhtml(sax.ContentHandler):
         append,
         firstInChapter,
         isEpigraph,
+        pageIndex,
     ):
         """Feed a string file to the parser.
         
@@ -41,13 +42,13 @@ class NovxToXhtml(sax.ContentHandler):
         self._firstParagraphInChapter = firstInChapter
         self._indentParagraph = append and not isEpigraph
         self._isEpigraph = isEpigraph
+        self.pageIndex = pageIndex
         self._quotations = False
         self._list = False
         self._note = False
         self._skipElement = False
         self._noteLines.clear()
         self.xhtmlLines.clear()
-        self.footnotes.clear()
         if xmlString:
             sax.parseString(f'<content>{xmlString}</content>', self)
 
@@ -87,6 +88,9 @@ class NovxToXhtml(sax.ContentHandler):
             if self._list:
                 return
 
+            if self._note:
+                return
+
             lines.append('&nbsp;</p>\n')
             self._quotations = False
             return
@@ -96,7 +100,12 @@ class NovxToXhtml(sax.ContentHandler):
             return
 
         if name == 'note':
-            self.footnotes.append(''.join(self._noteLines))
+            self.footnotes.append(
+                (
+                    self.pageIndex,
+                    '<br />'.join(self._noteLines)
+                )
+            )
             self._noteLines.clear()
             self._note = False
             return
@@ -144,7 +153,8 @@ class NovxToXhtml(sax.ContentHandler):
                 return
 
             if self._note:
-                lines.append(f'<p{lang}>')
+                return
+
             elif self._isEpigraph:
                 lines.append(f'<p class="epigraph"{lang}>')
             elif xmlAttributes.get('style', None) == 'quotations':
@@ -175,6 +185,13 @@ class NovxToXhtml(sax.ContentHandler):
             return
 
         if name == 'note':
+            noteIndex = len(self.footnotes) + 1
+            noteId = str(noteIndex).zfill(4)
+            self.xhtmlLines.append(
+                f'<a href="footnotes.xhtml#footnote-{noteId}">'
+                f'<sup>{noteIndex}</sup></a>'
+                f'<a id="fnreturn-{noteId}"></a>'
+            )
             self._note = True
             return
 
