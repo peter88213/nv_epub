@@ -12,15 +12,18 @@ The [novelibre](https://github.com/peter88213/novelibre/) Python program helps a
 
 ![Screenshot](docs/Screenshots/screen01.png)
 
-> [!NOTE]
-> This is a beta version intended for testing purposes. 
-> Exported EPUB e-books pass the EPUB 2.0.1 validation with [EPUBcheck](https://www.w3.org/publishing/epubcheck/).
-> However, footnotes and endnotes are not yet supported. 
-> 
-> Since this plugin is currently under testing and development, updates may be provided frequently.
-> Consider installing the [nv_updater](https://github.com/peter88213/nv_updater/) update checker and running it from time to time. 
->
-> Feel free to share your thoughts in the [novelibre discussion forum](https://github.com/peter88213/novelibre/discussions). 
+
+## Features
+
+- Exported EPUB e-books pass the EPUB 2.0.1 validation with 
+  [EPUBcheck](https://www.w3.org/publishing/epubcheck/).
+- All format styles used with *novelibre* are supported. 
+- Footnotes are supported; endnotes are exported as footnotes. 
+- If provided, a cover is included. 
+- the e-book's file name is generated according to the 
+  [Calibre](https://calibre-ebook.com/) default pattern, 
+  so e-books managed by Calibre can be easily updated by overwriting.
+- It is possible for the user to provide custom CSS stylesheets.
 
 
 ## Requirements

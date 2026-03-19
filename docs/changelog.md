@@ -5,6 +5,14 @@
 ## Changelog
 
 
+### Version 5.0.0
+
+Official release.
+
+API: 5.53
+Based on novelibre 5.53.4
+
+
 ### Version 0.7.2
 
 - Generating e-book file names according to Calibre standard.

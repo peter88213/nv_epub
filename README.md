@@ -1,4 +1,4 @@
-[![Download the latest release](docs/img/download-button.png)](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v0.7.2.pyz)
+[![Download the latest release](docs/img/download-button.png)](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v5.0.0.pyz)
 [![Changelog](docs/img/changelog-button.png)](docs/changelog.md)
 [![News/Feedback](docs/img/news-button.png)](https://github.com/peter88213/novelibre/discussions)
 [![Online help](docs/img/help-button.png)](https://peter88213.github.io/nv_epub/help/)
@@ -12,15 +12,18 @@ The [novelibre](https://github.com/peter88213/novelibre/) Python program helps a
 
 ![Screenshot](docs/Screenshots/screen01.png)
 
-> [!NOTE]
-> This is a beta version intended for testing purposes. 
-> Exported EPUB e-books pass the EPUB 2.0.1 validation with [EPUBcheck](https://www.w3.org/publishing/epubcheck/).
-> However, footnotes and endnotes are not yet supported. 
-> 
-> Since this plugin is currently under testing and development, updates may be provided frequently.
-> Consider installing the [nv_updater](https://github.com/peter88213/nv_updater/) update checker and running it from time to time. 
->
-> Feel free to share your thoughts in the [novelibre discussion forum](https://github.com/peter88213/novelibre/discussions). 
+
+## Features
+
+- Exported EPUB e-books pass the EPUB 2.0.1 validation with 
+  [EPUBcheck](https://www.w3.org/publishing/epubcheck/).
+- All format styles used with *novelibre* are supported. 
+- Footnotes are supported; endnotes are exported as footnotes. 
+- If provided, a cover is included. 
+- the e-book's file name is generated according to the 
+  [Calibre](https://calibre-ebook.com/) default pattern, 
+  so e-books managed by Calibre can be easily updated by overwriting.
+- It is possible for the user to provide custom CSS stylesheets.
 
 
 ## Requirements
@@ -31,10 +34,10 @@ The [novelibre](https://github.com/peter88213/novelibre/) Python program helps a
 
 ### Default: Executable Python zip archive
 
-Download the latest release [nv_epub_v0.7.2.pyz](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v0.7.2.pyz)
+Download the latest release [nv_epub_v5.0.0.pyz](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v5.0.0.pyz)
 
-- Launch *nv_epub_v0.7.2.pyz* by double-clicking (Windows desktop),
-- or execute `python nv_epub_v0.7.2.pyz` (Windows), resp. `python3 nv_epub_v0.7.2.pyz` (Linux) on the command line.
+- Launch *nv_epub_v5.0.0.pyz* by double-clicking (Windows desktop),
+- or execute `python nv_epub_v5.0.0.pyz` (Windows), resp. `python3 nv_epub_v5.0.0.pyz` (Linux) on the command line.
 
 > [!IMPORTANT]
 > Many web browsers recognize the download as an executable file and offer to open it immediately. 
@@ -49,9 +52,9 @@ Download the latest release [nv_epub_v0.7.2.pyz](https://github.com/peter88213/n
 
 ### Alternative: Zip file
 
-The package is also available in zip format: [nv_epub_v0.7.2.zip](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v0.7.2.zip)
+The package is also available in zip format: [nv_epub_v5.0.0.zip](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v5.0.0.zip)
 
-- Extract the *nv_epub_v0.7.2* folder from the downloaded zipfile "nv_epub_v0.7.2.zip".
+- Extract the *nv_epub_v5.0.0* folder from the downloaded zipfile "nv_epub_v5.0.0.zip".
 - Move into this new folder and launch *setup.py* by double-clicking (Windows/Linux desktop), 
 - or execute `python setup.py` (Windows), resp. `python3 setup.py` (Linux) on the command line.
 
