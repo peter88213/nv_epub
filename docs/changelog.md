@@ -5,9 +5,10 @@
 ## Changelog
 
 
-### Version 0.5.1
+### Version 0.6.0
 
-- Revised the NovxToXml parser.
+- Supporting footnotes.
+- Including a cover image, if any.
 
 API: 5.53
 Based on novelibre 5.53.2

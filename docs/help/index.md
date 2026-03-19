@@ -19,6 +19,12 @@ File name suffix is `_ebook`.
 
 ---
 
+## Provide a cover image (optional)
+
+Just place your JPEG cover named `cover.jpg` in the project directory.
+
+---
+
 ## Use a custom css stylesheet
 
 Just place your stylesheet named `nv_epub.css` in the project directory.
