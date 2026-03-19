@@ -20,7 +20,7 @@ The [novelibre](https://github.com/peter88213/novelibre/) Python program helps a
 - All format styles used with *novelibre* are supported. 
 - Footnotes are supported; endnotes are exported as footnotes. 
 - If provided, a cover is included. 
-- the e-book's file name is generated according to the 
+- The e-book's file name is generated according to the 
   [Calibre](https://calibre-ebook.com/) default pattern, 
   so e-books managed by Calibre can be easily updated by overwriting.
 - It is possible for the user to provide custom CSS stylesheets.
