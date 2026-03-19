@@ -13,9 +13,10 @@ open it with **Help \> nv_epub Online help**.
 
 ## Export an e-book
 
-**Export > EPUB e-book** creates an *.epub* file
-with the *novelibre* project's name in the project directory.
-File name suffix is `_ebook`.
+**Export > EPUB e-book** creates an *.epub* file in the project directory.
+The filenames of the generated e-book follows this pattern: 
+`<Title> - <Author>.epub` 
+
 
 ---
 

@@ -3,9 +3,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.6.0\n"
+"Project-Id-Version: 0.7.0\n"
 "POT-Creation-Date: 2026-03-15 16:18:14\n"
-"PO-Revision-Date: 2026-03-19 16:25:13\n"
+"PO-Revision-Date: 2026-03-19 17:38:18\n"
 "Last-Translator: Peter Triesberger\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -52,9 +52,6 @@ msgstr "EPUB-Export-Plugin Online-Hilfe"
 
 msgid "Ending"
 msgstr "Ende"
-
-msgid "File"
-msgstr "Datei"
 
 msgid "File exported"
 msgstr "Datei exportiert"

@@ -6,7 +6,8 @@ License: GNU GPLv3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
 """
 import datetime
 import os
-from shutil import rmtree, copy2
+from shutil import copy2
+from shutil import rmtree
 from string import Template
 import tempfile
 import uuid
@@ -14,21 +15,18 @@ from xml import sax
 import zipfile
 
 from nvepub.novx_to_xhtml import NovxToXhtml
-from nvepub.nvepub_globals import EPUB_SUFFIX
 from nvepub.nvepub_locale import _
 from nvepub.stylesheet import Stylesheet
-from nvlib.model.file.file import File
 from nvlib.novx_globals import CH_ROOT
 from nvlib.novx_globals import norm_path
 
 
-class Epub(File, Stylesheet):
+class Epub(Stylesheet):
 
     DESCRIPTION = 'EPUB e-book'
     EXTENSION = '.epub'
-    SUFFIX = EPUB_SUFFIX
-    CSS_NAME = 'nv_epub.css'
 
+    CSS_NAME = 'nv_epub.css'
     _COVER_FILE = 'cover.jpg'
     _COVER_PAGE_NAME = 'coverpage.xhtml'
     _FOOTNOTES_PAGE_NAME = 'footnotes.xhtml'
@@ -159,7 +157,9 @@ class Epub(File, Stylesheet):
     _sectionDivider = '<h4>* * *</h4>\n'
 
     def __init__(self, filePath, **kwargs):
-        super().__init__(filePath, **kwargs)
+        self.novel = None
+        self.filePath = filePath
+
         self.version = kwargs['version']
         self.uuid = None
         self._tempDir = tempfile.mkdtemp(suffix='.tmp', prefix='nv_epub_')

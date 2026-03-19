@@ -73,6 +73,12 @@ class Plugin(PluginBase):
         )
 
     def _export_epub(self):
+
+        def sanitize_path(pathStr):
+            for c in  ('\\', '/', ':', '*', '?', '"', '<', '>', '|'):
+                pathStr = pathStr.replace(c, '')
+            return pathStr
+
         if self._mdl.prjFile is None:
             return False
 
@@ -91,30 +97,35 @@ class Plugin(PluginBase):
                 return False
 
             self._ctrl.save_project()
-        path, __ = os.path.splitext(self._mdl.prjFile.filePath)
-        EpubPath = f'{path}{Epub.SUFFIX}{Epub.EXTENSION}'
-        if os.path.isfile(EpubPath):
+
+        fileNameHead = sanitize_path(
+            f'{self._mdl.novel.title} - {self._mdl.novel.authorName}'
+        )
+        fileName = f'{fileNameHead}{Epub.EXTENSION}'
+        prjDir = os.path.dirname(self._mdl.prjFile.filePath)
+        epubPath = os.path.join(prjDir, fileName)
+        if os.path.isfile(epubPath):
             if not self._ui.ask_yes_no(
                 message=_('Overwrite existing e-book?'),
-                detail=norm_path(EpubPath),
+                detail=norm_path(epubPath),
                 title=self.FEATURE,
             ):
                 self._ui.set_status(f'#{_("Action canceled by user")}.')
                 return False
 
-        EpubFile = Epub(
-            EpubPath,
+        epubFile = Epub(
+            epubPath,
             version=self.VERSION,
             prjDir=os.path.dirname(self._mdl.prjFile.filePath),
         )
-        EpubFile.novel = self._mdl.novel
+        epubFile.novel = self._mdl.novel
         try:
-            EpubFile.write()
+            epubFile.write()
         except Exception as ex:
             self._ui.set_status(f'!{str(ex)}')
             return False
 
-        self._ui.set_status(f'{_("File exported")}: {EpubPath}')
+        self._ui.set_status(f'{_("File exported")}: {epubPath}')
         return True
 
     def open_help(self):

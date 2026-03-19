@@ -5,6 +5,14 @@
 ## Changelog
 
 
+### Version 0.7.0
+
+- Generating e-book file names according to Calibre standard.
+
+API: 5.53
+Based on novelibre 5.53.2
+
+
 ### Version 0.6.0
 
 - Supporting footnotes.
