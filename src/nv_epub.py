@@ -16,6 +16,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 """
 import os
+import re
 import webbrowser
 
 from nvepub.nvepub_locale import _
@@ -75,9 +76,7 @@ class Plugin(PluginBase):
     def _export_epub(self):
 
         def sanitize_path(pathStr):
-            for c in  ('\\', '/', ':', '*', '?', '"', '<', '>', '|'):
-                pathStr = pathStr.replace(c, '_')
-            return pathStr
+            return re.sub(r'[\/\\\?\*:\|"><]', '_', pathStr)
 
         if self._mdl.prjFile is None:
             return False

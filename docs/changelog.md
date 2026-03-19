@@ -5,7 +5,7 @@
 ## Changelog
 
 
-### Version 0.7.1
+### Version 0.7.2
 
 - Generating e-book file names according to Calibre standard.
 
