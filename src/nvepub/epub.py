@@ -6,7 +6,7 @@ License: GNU GPLv3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
 """
 import datetime
 import os
-from shutil import rmtree
+from shutil import rmtree, copy2
 from string import Template
 import tempfile
 import uuid
@@ -28,6 +28,10 @@ class Epub(File, Stylesheet):
     EXTENSION = '.epub'
     SUFFIX = EPUB_SUFFIX
     CSS_NAME = 'nv_epub.css'
+
+    _COVER_FILE = 'cover.jpg'
+    _COVER_PAGE_NAME = 'coverpage.xhtml'
+    _FOOTNOTES_PAGE_NAME = 'footnotes.xhtml'
 
     _MIMETYPE = 'application/epub+zip'
     _CONTAINER_XML = (
@@ -61,8 +65,8 @@ class Epub(File, Stylesheet):
     )
     _CONTENT_OPF_FOOTER = (
         '    <guide>\n'
-        '       <reference type="cover" '
-        'title="Cover Page" href="$Coverpage"/>\n'
+        '        <reference type="cover" '
+        'title="Cover" href="$Coverpage"/>\n'
         '    </guide>\n'
         '</package>\n'
     )
@@ -103,6 +107,27 @@ class Epub(File, Stylesheet):
         '</p>\n'
         '</div>\n'
     )
+    _COVER_PAGE = (
+        '<?xml version="1.0" encoding="utf-8"?>\n'
+        '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">\n'
+        '  <head>\n'
+        '    <meta http-equiv="Content-Type" content="text/html; '
+        'charset=UTF-8"/>\n'
+        '    <title>Cover</title>\n'
+        '    <style type="text/css" title="override_css">\n'
+        '      @page {padding: 0pt; margin:0pt}\n'
+        '      body { text-align: center; padding:0pt; margin: 0pt; '
+        'background-color : #000000;}\n'
+        '    </style>\n'
+        '  </head>\n'
+        '  <body>\n'
+        '    <div>    <img id="cover" height="100%" alt="Cover" '
+        'src="../$Cover" />\n'
+        '    </div>\n'
+        '  </body>\n'
+        '</html>\n'
+
+    )
     _fileHeader = (
         '<?xml version="1.0" encoding="utf-8"?>\n'
         '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"\n'
@@ -142,13 +167,17 @@ class Epub(File, Stylesheet):
         self._epubComponents = []
         self._ChIdsByContentFileNames = []
         self._contentParser = NovxToXhtml()
+        self._hasCover = False
+        self._coverPath = self._coverPagePath = 'text/content0001.xhtml'
 
     def write(self):
         self._set_up()
         self.write_file('mimetype', self._MIMETYPE)
+        self._include_cover()
         self.uuid = str(uuid.uuid4())
         ChIdsByContentFileNames = self._write_chapters()
         self.write_css()
+        # method of the Stylesheet mixin
         self._write_toc_ncx(ChIdsByContentFileNames)
         self._write_content_opf(ChIdsByContentFileNames)
         self.write_file('META-INF/container.xml', self._CONTAINER_XML)
@@ -345,6 +374,23 @@ class Epub(File, Stylesheet):
 
         return lines
 
+    def _include_cover(self):
+        prjCoverPath = os.path.join(self.prjDir, self._COVER_FILE)
+        if not os.path.isfile(prjCoverPath):
+            return
+
+        coverDir = f'{self._tempDir}/OEBPS/images'
+        os.makedirs(coverDir)
+        copy2(prjCoverPath, coverDir)
+        self._epubComponents.append(f'OEBPS/images/{self._COVER_FILE}')
+        self._coverPath = f'images/{self._COVER_FILE}'
+        self._coverPagePath = f'text/{self._COVER_PAGE_NAME}'
+        self._hasCover = True
+        text = Template(self._COVER_PAGE).safe_substitute(
+            {'Cover': self._coverPath, }
+        )
+        self.write_file(f'OEBPS/{self._coverPagePath}', text)
+
     def _set_up(self):
         # Create and open a temporary directory for the files to zip.
         try:
@@ -373,7 +419,7 @@ class Epub(File, Stylesheet):
         Return a list of file names.
         """
 
-        def write_file(pageIndex, text, chId):
+        def write_chapter_file(pageIndex, text, chId):
             contentFileName = f'content{pageIndex:04}.xhtml'
             ChIdsByContentFileNames[contentFileName] = chId
             self.write_file(f'OEBPS/text/{contentFileName}', text)
@@ -422,7 +468,7 @@ class Epub(File, Stylesheet):
             )
             text = f'{fileHeader}{"".join(lines)}{self._fileFooter}'
             pageIndex += 1
-            write_file(pageIndex, text, chId)
+            write_chapter_file(pageIndex, text, chId)
 
         #--- Write footnotes, if any.
         if self._contentParser.footnotes:
@@ -442,7 +488,7 @@ class Epub(File, Stylesheet):
                 {'Title': 'Footnotes', 'Stylesheet': self.CSS_NAME, }
             )
             text = f'{fileHeader}{"".join(lines)}{self._fileFooter}'
-            self.write_file(f'OEBPS/text/footnotes.xhtml', text)
+            self.write_file(f'OEBPS/text/{self._FOOTNOTES_PAGE_NAME}', text)
 
         return ChIdsByContentFileNames
 
@@ -454,11 +500,13 @@ class Epub(File, Stylesheet):
             'Author': self._escape_string(self.novel.authorName),
             'Language': self.novel.languageCode,
             'Title': self._escape_string(self.novel.title),
-            'Coverpage': 'text/content0001.xhtml'
+            'Coverpage': self._coverPagePath,
         }
         contentOpfLines = [
             Template(self._CONTENT_OPF_HEADER).safe_substitute(opfMapping),
         ]
+
+        #--- manifest
         contentOpfLines.append('    <manifest>')
         contentOpfLines.append(
             '        <item id="ncx" href="toc.ncx" '
@@ -468,6 +516,17 @@ class Epub(File, Stylesheet):
             f'        <item id="{self.CSS_NAME}" '
             f'href="styles/{self.CSS_NAME}" media-type="text/css"/>'
         )
+        if self._hasCover:
+            contentOpfLines.append(
+                f'        <item id="{self._COVER_FILE}" '
+                f'href="images/{self._COVER_FILE}" '
+                'media-type="image/jpeg"/>'
+            )
+            contentOpfLines.append(
+                f'        <item id="{self._COVER_PAGE_NAME}" '
+                f'href="text/{self._COVER_PAGE_NAME}" '
+                'media-type="application/xhtml+xml"/>'
+            )
         for fileName in ChIdsByContentFileNames:
             contentOpfLines.append(
                 f'        <item id="{fileName}" href="text/{fileName}" '
@@ -476,19 +535,26 @@ class Epub(File, Stylesheet):
             )
         if self._contentParser.footnotes:
             contentOpfLines.append(
-                '        <item id="footnotes.xhtml" '
-                'href="text/footnotes.xhtml" '
+                f'        <item id="{self._FOOTNOTES_PAGE_NAME}" '
+                f'href="text/{self._FOOTNOTES_PAGE_NAME}" '
                 'media-type="application/xhtml+xml"/>'
             )
         contentOpfLines.append('    </manifest>')
+
+        #--- spine
         contentOpfLines.append('    <spine toc="ncx">')
+        if self._hasCover:
+            contentOpfLines.append(
+                '        <itemref idref="coverpage.xhtml"/>'
+            )
         for fileName in ChIdsByContentFileNames:
             contentOpfLines.append(
-                f'       <itemref idref="{fileName}"/>'
+                f'        <itemref idref="{fileName}"/>'
             )
         if self._contentParser.footnotes:
             contentOpfLines.append(
-                '       <itemref idref="footnotes.xhtml" linear="no"/>'
+                f'        <itemref idref="{self._FOOTNOTES_PAGE_NAME}" '
+                'linear="no"/>'
             )
         contentOpfLines.append('    </spine>')
         contentOpfLines.append(
