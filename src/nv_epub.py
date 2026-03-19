@@ -76,7 +76,7 @@ class Plugin(PluginBase):
 
         def sanitize_path(pathStr):
             for c in  ('\\', '/', ':', '*', '?', '"', '<', '>', '|'):
-                pathStr = pathStr.replace(c, '')
+                pathStr = pathStr.replace(c, '_')
             return pathStr
 
         if self._mdl.prjFile is None:
@@ -98,8 +98,11 @@ class Plugin(PluginBase):
 
             self._ctrl.save_project()
 
+        authorName = self._mdl.novel.authorName
+        if not authorName:
+            authorName = _('Unknown')
         fileNameHead = sanitize_path(
-            f'{self._mdl.novel.title} - {self._mdl.novel.authorName}'
+            f'{self._mdl.novel.title} - {authorName}'
         )
         fileName = f'{fileNameHead}{Epub.EXTENSION}'
         prjDir = os.path.dirname(self._mdl.prjFile.filePath)

@@ -5,12 +5,12 @@
 ## Changelog
 
 
-### Version 0.7.0
+### Version 0.7.1
 
 - Generating e-book file names according to Calibre standard.
 
 API: 5.53
-Based on novelibre 5.53.2
+Based on novelibre 5.53.4
 
 
 ### Version 0.6.0
@@ -19,7 +19,7 @@ Based on novelibre 5.53.2
 - Including a cover image, if any.
 
 API: 5.53
-Based on novelibre 5.53.2
+Based on novelibre 5.53.4
 
 
 ### Version 0.5.0
