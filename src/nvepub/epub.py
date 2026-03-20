@@ -17,11 +17,12 @@ import zipfile
 from nvepub.novx_to_xhtml import NovxToXhtml
 from nvepub.nvepub_locale import _
 from nvepub.stylesheet import Stylesheet
+from nvepub.toc import Toc
 from nvlib.novx_globals import CH_ROOT
 from nvlib.novx_globals import norm_path
 
 
-class Epub(Stylesheet):
+class Epub(Stylesheet, Toc):
 
     DESCRIPTION = 'EPUB e-book'
     EXTENSION = '.epub'
@@ -67,43 +68,6 @@ class Epub(Stylesheet):
         'title="Cover" href="$Coverpage"/>\n'
         '    </guide>\n'
         '</package>\n'
-    )
-    _TOC_NCX_HEADER = (
-        '<?xml version="1.0"?>\n'
-        '<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN"\n'
-        '    "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">\n'
-        '\n'
-        '<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">\n'
-        '    <head>\n'
-        '        <meta name="dtb:uid" content="$Uuid"/>\n'
-        '        <meta name="dtb:depth" content="2"/>\n'
-        '        <meta name="dtb:totalPageCount" content="0"/>\n'
-        '        <meta name="dtb:maxPageNumber" content="0"/>\n'
-        '    </head>\n'
-        '    <docTitle>\n'
-        '        <text>$Title</text>\n'
-        '    </docTitle>\n'
-        '    <navMap>'
-    )
-    _TOC_NAV_POINT = (
-'      <navPoint id="$NavpointID" playOrder="$Playorder">\n'
-'        <navLabel>\n'
-'          <text>$Title</text>\n'
-'        </navLabel>\n'
-'        <content src="text/$Filename#$HeadingID"/>\n'
-'      </navPoint>'
-    )
-    _TOC_NCX_FOOTER = (
-        '    </navMap>\n'
-        '</ncx>\n'
-    )
-    _FOOTNOTE = (
-        '<div class="footnote" id="footnote-$NoteIndex">\n'
-        '<p class="fnparagraph">'
-        '$Text&nbsp; '
-        '<a href="$Page#fnreturn-$NoteIndex"><strong>&#x21B5;</strong></a>'
-        '</p>\n'
-        '</div>\n'
     )
     _COVER_PAGE = (
         '<?xml version="1.0" encoding="utf-8"?>\n'
@@ -178,7 +142,7 @@ class Epub(Stylesheet):
         ChIdsByContentFileNames = self._write_chapters()
         self.write_css()
         # method of the Stylesheet mixin
-        self._write_toc_ncx(ChIdsByContentFileNames)
+        self.write_toc_ncx(ChIdsByContentFileNames)
         self._write_content_opf(ChIdsByContentFileNames)
         self.write_file('META-INF/container.xml', self._CONTAINER_XML)
 
@@ -562,33 +526,3 @@ class Epub(Stylesheet):
         )
         self.write_file(f'OEBPS/content.opf', '\n'.join(contentOpfLines))
 
-    def _write_toc_ncx(self, ChIdsByContentFileNames):
-        ncxMapping = {
-            'Uuid': self.uuid,
-            'Title': self._escape_string(self.novel.title),
-        }
-        tocNcxLines = [
-            Template(self._TOC_NCX_HEADER).safe_substitute(ncxMapping),
-        ]
-        i = 0
-        for ContentFileName in ChIdsByContentFileNames:
-            chId = ChIdsByContentFileNames[ContentFileName]
-            if not chId in self.novel.chapters:
-                continue
-
-            i += 1
-            order = str(i)
-            navPointMapping = {
-                'NavpointID': f'navPoint-{order}',
-                'Playorder': order,
-                'Title': self._escape_string(self.novel.chapters[chId].title),
-                'Filename': ContentFileName,
-                'HeadingID': chId,
-            }
-            tocNcxLines.append(
-                Template(self._TOC_NAV_POINT).safe_substitute(navPointMapping),
-            )
-        tocNcxLines.append(
-            Template(self._TOC_NCX_FOOTER).safe_substitute(ncxMapping),
-        )
-        self.write_file(f'OEBPS/toc.ncx', '\n'.join(tocNcxLines))
