@@ -5,9 +5,9 @@
 ## Changelog
 
 
-### Version 5.0.1
+### Version 5.0.2
 
-- Refactored the code for better maintainability.
+- Showing the part/chapter hierarchy in the table of contents.
 
 API: 5.53
 Based on novelibre 5.53.4

@@ -28,14 +28,14 @@ class Toc:
         '    </docTitle>\n'
         '    <navMap>'
     )
-    _TOC_NAV_POINT = (
-'      <navPoint id="$NavpointID" playOrder="$Playorder">\n'
-'        <navLabel>\n'
-'          <text>$Title</text>\n'
-'        </navLabel>\n'
-'        <content src="text/$Filename#$HeadingID"/>\n'
-'      </navPoint>'
+    _NAV_POINT_OPEN = (
+        '      <navPoint id="$NavpointID" playOrder="$Playorder">\n'
+        '        <navLabel>\n'
+        '          <text>$Title</text>\n'
+        '        </navLabel>\n'
+        '        <content src="text/$Filename#$HeadingID"/>'
     )
+    _NAV_POINT_CLOSE = '      </navPoint>'
     _TOC_NCX_FOOTER = (
         '    </navMap>\n'
         '</ncx>\n'
@@ -61,11 +61,17 @@ class Toc:
         tocNcxLines = [
             Template(self._TOC_NCX_HEADER).substitute(ncxMapping),
         ]
+        inPart = False
         i = 0
         for ContentFileName in chIdsByContentFileNames:
             chId = chIdsByContentFileNames[ContentFileName]
             if not chId in self.novel.chapters:
                 continue
+
+            if self.novel.chapters[chId].chLevel == 1:
+                if inPart:
+                    tocNcxLines.append(self._NAV_POINT_CLOSE)
+                inPart = True
 
             i += 1
             order = str(i)
@@ -77,8 +83,12 @@ class Toc:
                 'HeadingID': chId,
             }
             tocNcxLines.append(
-                Template(self._TOC_NAV_POINT).substitute(navPointMapping),
+                Template(self._NAV_POINT_OPEN).substitute(navPointMapping)
             )
+            if self.novel.chapters[chId].chLevel == 2:
+                tocNcxLines.append(self._NAV_POINT_CLOSE)
+        if inPart:
+            tocNcxLines.append(self._NAV_POINT_CLOSE)
         tocNcxLines.append(
             Template(self._TOC_NCX_FOOTER).substitute(ncxMapping),
         )
