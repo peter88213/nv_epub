@@ -7,6 +7,12 @@ License: GNU GPLv3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
 import datetime
 from string import Template
 
+from nvepub.nvepub_globals import COVER_FILE
+from nvepub.nvepub_globals import COVER_PAGE_NAME
+from nvepub.nvepub_globals import CSS_NAME
+from nvepub.nvepub_globals import FOOTNOTES_PAGE_NAME
+from nvepub.nvepub_globals import escape_string
+
 
 class ContentOpf:
 
@@ -26,7 +32,7 @@ class ContentOpf:
         '        <dc:language>$Language</dc:language>\n'
         '        <dc:title>$Title</dc:title>\n'
         '        <meta name="nv_epub" content="$Version"/>\n'
-        '        <meta name="cover" content="cover.jpg"/>\n'
+        '        <meta name="cover" content="$Coverfile"/>\n'
         '    </metadata>'
     )
     _CONTENT_OPF_FOOTER = (
@@ -37,73 +43,85 @@ class ContentOpf:
         '</package>\n'
     )
 
-    def write_content_opf(self, ChIdsByContentFileNames):
+    def write_content_opf(
+        self,
+        chIdsByContentFileNames,
+        coverPagePath,
+        hasCover,
+        eBookUuid,
+        version,
+    ):
         opfMapping = {
-            'Uuid': self.uuid,
-            'Version': self.version,
+            'Uuid': eBookUuid,
+            'Version': version,
             'Date': datetime.date.today().isoformat(),
-            'Author': self._escape_string(self.novel.authorName),
+            'Author': escape_string(self.novel.authorName),
             'Language': self.novel.languageCode,
-            'Title': self._escape_string(self.novel.title),
-            'Coverpage': self._coverPagePath,
+            'Title': escape_string(self.novel.title),
+            'Coverpage': coverPagePath,
+            'Coverfile': COVER_FILE,
         }
+
+        #--- Header with metadata.
         contentOpfLines = [
-            Template(self._CONTENT_OPF_HEADER).safe_substitute(opfMapping),
+            Template(self._CONTENT_OPF_HEADER).substitute(opfMapping),
         ]
 
-        #--- manifest
+        #--- manifest.
         contentOpfLines.append('    <manifest>')
         contentOpfLines.append(
             '        <item id="ncx" href="toc.ncx" '
             'media-type="application/x-dtbncx+xml"/>'
         )
         contentOpfLines.append(
-            f'        <item id="{self.CSS_NAME}" '
-            f'href="styles/{self.CSS_NAME}" media-type="text/css"/>'
+            f'        <item id="{CSS_NAME}" '
+            f'href="styles/{CSS_NAME}" media-type="text/css"/>'
         )
-        if self._hasCover:
+        if hasCover:
             contentOpfLines.append(
-                f'        <item id="{self._COVER_FILE}" '
-                f'href="images/{self._COVER_FILE}" '
+                f'        <item id="{COVER_FILE}" '
+                f'href="images/{COVER_FILE}" '
                 'media-type="image/jpeg"/>'
             )
             contentOpfLines.append(
-                f'        <item id="{self._COVER_PAGE_NAME}" '
-                f'href="text/{self._COVER_PAGE_NAME}" '
+                f'        <item id="{COVER_PAGE_NAME}" '
+                f'href="text/{COVER_PAGE_NAME}" '
                 'media-type="application/xhtml+xml"/>'
             )
-        for fileName in ChIdsByContentFileNames:
+        for fileName in chIdsByContentFileNames:
             contentOpfLines.append(
                 f'        <item id="{fileName}" href="text/{fileName}" '
                 'media-type="application/xhtml+xml"/>'
 
             )
-        if self._contentParser.footnotes:
+        if self.contentParser.footnotes:
             contentOpfLines.append(
-                f'        <item id="{self._FOOTNOTES_PAGE_NAME}" '
-                f'href="text/{self._FOOTNOTES_PAGE_NAME}" '
+                f'        <item id="{FOOTNOTES_PAGE_NAME}" '
+                f'href="text/{FOOTNOTES_PAGE_NAME}" '
                 'media-type="application/xhtml+xml"/>'
             )
         contentOpfLines.append('    </manifest>')
 
-        #--- spine
+        #--- spine.
         contentOpfLines.append('    <spine toc="ncx">')
-        if self._hasCover:
+        if hasCover:
             contentOpfLines.append(
-                '        <itemref idref="coverpage.xhtml"/>'
+                f'        <itemref idref="{COVER_PAGE_NAME}"/>'
             )
-        for fileName in ChIdsByContentFileNames:
+        for fileName in chIdsByContentFileNames:
             contentOpfLines.append(
                 f'        <itemref idref="{fileName}"/>'
             )
-        if self._contentParser.footnotes:
+        if self.contentParser.footnotes:
             contentOpfLines.append(
-                f'        <itemref idref="{self._FOOTNOTES_PAGE_NAME}" '
+                f'        <itemref idref="{FOOTNOTES_PAGE_NAME}" '
                 'linear="no"/>'
             )
         contentOpfLines.append('    </spine>')
+
+        #--- Footer with guide.
         contentOpfLines.append(
-            Template(self._CONTENT_OPF_FOOTER).safe_substitute(opfMapping),
+            Template(self._CONTENT_OPF_FOOTER).substitute(opfMapping),
         )
         self.write_file(f'OEBPS/content.opf', '\n'.join(contentOpfLines))
 

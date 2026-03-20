@@ -6,6 +6,8 @@ License: GNU GPLv3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
 """
 from string import Template
 
+from nvepub.nvepub_globals import escape_string
+
 
 class Toc:
 
@@ -47,17 +49,21 @@ class Toc:
         '</div>\n'
     )
 
-    def write_toc_ncx(self, ChIdsByContentFileNames):
+    def write_toc_ncx(
+        self,
+        chIdsByContentFileNames,
+        eBookUuid,
+    ):
         ncxMapping = {
-            'Uuid': self.uuid,
-            'Title': self._escape_string(self.novel.title),
+            'Uuid': eBookUuid,
+            'Title': escape_string(self.novel.title),
         }
         tocNcxLines = [
-            Template(self._TOC_NCX_HEADER).safe_substitute(ncxMapping),
+            Template(self._TOC_NCX_HEADER).substitute(ncxMapping),
         ]
         i = 0
-        for ContentFileName in ChIdsByContentFileNames:
-            chId = ChIdsByContentFileNames[ContentFileName]
+        for ContentFileName in chIdsByContentFileNames:
+            chId = chIdsByContentFileNames[ContentFileName]
             if not chId in self.novel.chapters:
                 continue
 
@@ -66,14 +72,14 @@ class Toc:
             navPointMapping = {
                 'NavpointID': f'navPoint-{order}',
                 'Playorder': order,
-                'Title': self._escape_string(self.novel.chapters[chId].title),
+                'Title': escape_string(self.novel.chapters[chId].title),
                 'Filename': ContentFileName,
                 'HeadingID': chId,
             }
             tocNcxLines.append(
-                Template(self._TOC_NAV_POINT).safe_substitute(navPointMapping),
+                Template(self._TOC_NAV_POINT).substitute(navPointMapping),
             )
         tocNcxLines.append(
-            Template(self._TOC_NCX_FOOTER).safe_substitute(ncxMapping),
+            Template(self._TOC_NCX_FOOTER).substitute(ncxMapping),
         )
         self.write_file(f'OEBPS/toc.ncx', '\n'.join(tocNcxLines))
