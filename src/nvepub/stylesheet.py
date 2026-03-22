@@ -153,16 +153,16 @@ p.custom_6, .custom_7, .custom_8, .custom_9
         # must be transformed to uppercase.
         lines = css.split('\n')
         strong = False
-        upcase = False
+        upcaseStrong = False
         for line in lines:
             if strong:
                 if not line.startswith(' '):
                     strong = False
                 elif 'uppercase' in line:
-                    upcase = True
+                    upcaseStrong = True
                     break
 
             if line.startswith('strong'):
                 strong = True
-        return upcase
+        return upcaseStrong
 
