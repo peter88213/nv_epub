@@ -87,11 +87,11 @@ class Epub(
             self._tempDir,
             self._kwargs['prjDir'],
         )
-        transformStrong = self.write_css(
+        upcaseStrong = self.write_css(
             self._kwargs['prjDir'],
         )
         eBookUuid = str(uuid.uuid4())
-        chIdsByContentFileNames = self._write_chapters(transformStrong)
+        chIdsByContentFileNames = self._write_chapters(upcaseStrong)
         self.write_toc_ncx(
             chIdsByContentFileNames,
             eBookUuid,
@@ -165,7 +165,7 @@ class Epub(
                 firstInChapter,
                 isEpigraph,
                 kwargs['pageIndex'],
-                kwargs['transformStrong'],
+                kwargs['upcaseStrong'],
             )
             return ''.join(self.contentParser.xhtmlLines)
 
@@ -213,7 +213,7 @@ class Epub(
             pageIndex,
             firstInChapter=False,
             isEpigraph=False,
-            transformStrong=False,
+            upcaseStrong=False,
         ):
         return {
             'SectionContent':self._convert_from_novx(
@@ -223,7 +223,7 @@ class Epub(
                 isEpigraph=isEpigraph,
                 xml=True,
                 pageIndex=pageIndex,
-                transformStrong=transformStrong,
+                upcaseStrong=upcaseStrong,
             ),
             'Desc':self._convert_from_novx(
                 self.novel.sections[scId].desc,
@@ -237,7 +237,7 @@ class Epub(
             chId,
             pageIndex,
             isEpigraph,
-            transformStrong,
+            upcaseStrong,
     ):
         lines = []
         firstSectionInChapter = True
@@ -286,7 +286,7 @@ class Epub(
                         pageIndex,
                         firstInChapter=tempFirstSection,
                         isEpigraph=tempEpigraph,
-                        transformStrong=transformStrong,
+                        upcaseStrong=upcaseStrong,
                     )
                 )
             )
@@ -318,7 +318,7 @@ class Epub(
         except:
             pass
 
-    def _write_chapters(self, transformStrong):
+    def _write_chapters(self, upcaseStrong):
         """Process the chapters and nested sections.
         
         Write an xhtml file for each chapter.
@@ -364,7 +364,7 @@ class Epub(
                         chId,
                         pageIndex + 1,
                         self.novel.chapters[chId].hasEpigraph,
-                        transformStrong,
+                        upcaseStrong,
                     )
                 )
             if not lines:
