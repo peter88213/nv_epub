@@ -5,6 +5,15 @@
 ## Changelog
 
 
+### Version 5.0.3
+
+- Optimized the stylesheet.
+- Ensuring that text with strong emphasis is capitalized, if specified by CSS.
+
+API: 5.53
+Based on novelibre 5.53.4
+
+
 ### Version 5.0.2
 
 - Showing the part/chapter hierarchy in the table of contents.

@@ -29,6 +29,7 @@ class NovxToXhtml(sax.ContentHandler):
         firstInChapter,
         isEpigraph,
         pageIndex,
+        transformStrong,
     ):
         """Feed a string file to the parser.
         
@@ -42,10 +43,12 @@ class NovxToXhtml(sax.ContentHandler):
         self._firstParagraphInChapter = firstInChapter
         self._indentParagraph = append and not isEpigraph
         self._isEpigraph = isEpigraph
+        self._transformStrong = transformStrong
         self.pageIndex = pageIndex
         self._quotations = False
         self._list = False
         self._note = False
+        self._upcase = False
         self._skipElement = False
         self._noteLines.clear()
         self.xhtmlLines.clear()
@@ -60,6 +63,8 @@ class NovxToXhtml(sax.ContentHandler):
         if self._skipElement:
             return
 
+        if self._upcase:
+            content = content.upper()
         content = sax.saxutils.escape(content)
         if self._note:
             self._noteLines.append(content)
@@ -97,6 +102,8 @@ class NovxToXhtml(sax.ContentHandler):
 
         if name in ('em', 'strong', 'span'):
             lines.append(f'</{name}>')
+            if name == 'strong':
+                self._upcase = False
             return
 
         if name == 'note':
@@ -174,6 +181,8 @@ class NovxToXhtml(sax.ContentHandler):
 
         if name in ('em', 'strong', 'li'):
             lines.append(f'<{name}>')
+            if name == 'strong' and self._transformStrong:
+                self._upcase = True
             return
 
         if name == 'span':

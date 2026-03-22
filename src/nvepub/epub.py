@@ -87,11 +87,11 @@ class Epub(
             self._tempDir,
             self._kwargs['prjDir'],
         )
-        eBookUuid = str(uuid.uuid4())
-        chIdsByContentFileNames = self._write_chapters()
-        self.write_css(
+        transformStrong = self.write_css(
             self._kwargs['prjDir'],
         )
+        eBookUuid = str(uuid.uuid4())
+        chIdsByContentFileNames = self._write_chapters(transformStrong)
         self.write_toc_ncx(
             chIdsByContentFileNames,
             eBookUuid,
@@ -165,6 +165,7 @@ class Epub(
                 firstInChapter,
                 isEpigraph,
                 kwargs['pageIndex'],
+                kwargs['transformStrong'],
             )
             return ''.join(self.contentParser.xhtmlLines)
 
@@ -212,6 +213,7 @@ class Epub(
             pageIndex,
             firstInChapter=False,
             isEpigraph=False,
+            transformStrong=False,
         ):
         return {
             'SectionContent':self._convert_from_novx(
@@ -221,6 +223,7 @@ class Epub(
                 isEpigraph=isEpigraph,
                 xml=True,
                 pageIndex=pageIndex,
+                transformStrong=transformStrong,
             ),
             'Desc':self._convert_from_novx(
                 self.novel.sections[scId].desc,
@@ -234,6 +237,7 @@ class Epub(
             chId,
             pageIndex,
             isEpigraph,
+            transformStrong,
     ):
         lines = []
         firstSectionInChapter = True
@@ -282,6 +286,7 @@ class Epub(
                         pageIndex,
                         firstInChapter=tempFirstSection,
                         isEpigraph=tempEpigraph,
+                        transformStrong=transformStrong,
                     )
                 )
             )
@@ -313,7 +318,7 @@ class Epub(
         except:
             pass
 
-    def _write_chapters(self):
+    def _write_chapters(self, transformStrong):
         """Process the chapters and nested sections.
         
         Write an xhtml file for each chapter.
@@ -359,6 +364,7 @@ class Epub(
                         chId,
                         pageIndex + 1,
                         self.novel.chapters[chId].hasEpigraph,
+                        transformStrong,
                     )
                 )
             if not lines:

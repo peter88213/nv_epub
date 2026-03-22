@@ -16,6 +16,15 @@ class Stylesheet:
     {
     margin: 5pt;
     }
+strong
+    {
+    font-weight: normal;
+    text-transform: uppercase;
+    }
+em 
+    {
+    font-style: italic;
+    }
 body
     {
     font-family: "100 %", serif, sansserif;
@@ -42,11 +51,9 @@ h2
     }
 h4
     {
-    margin-top:2em;
-    margin-bottom:2em;
+    margin-top:1em;
+    margin-bottom:1em;
     line-height:normal;
-    page-break-after:avoid;
-    font-size: .90em;
     text-align: center;
     text-indent:0em;
     }
@@ -131,15 +138,6 @@ p.custom_6, .custom_7, .custom_8, .custom_9
     text-align: center;
     text-indent:0em;
     }
-em 
-    {
-    font-style: italic;
-    }
-strong
-    {
-    font-weight: normal;
-    text-transform: uppercase;
-    }
 '''
 
     def write_css(self, prjDir):
@@ -150,3 +148,21 @@ strong
         except:
             css = self.DEFAULT_CSS
         self.write_file(f'OEBPS/styles/{CSS_NAME}', css)
+
+        # Find out whether strongly emphasized text
+        # must be transformed to uppercase.
+        lines = css.split('\n')
+        strong = False
+        upcase = False
+        for line in lines:
+            if strong:
+                if not line.startswith(' '):
+                    strong = False
+                elif 'uppercase' in line:
+                    upcase = True
+                    break
+
+            if line.startswith('strong'):
+                strong = True
+        return upcase
+
