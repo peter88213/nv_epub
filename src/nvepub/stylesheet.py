@@ -150,19 +150,20 @@ p.custom_6, .custom_7, .custom_8, .custom_9
         self.write_file(f'OEBPS/styles/{CSS_NAME}', css)
 
         # Find out whether strongly emphasized text
-        # must be transformed to uppercase.
+        # must be transformed to all-caps.
         lines = css.split('\n')
         strong = False
         upcaseStrong = False
         for line in lines:
             if strong:
                 if not line.startswith(' '):
-                    strong = False
+                    break
+
                 elif 'uppercase' in line:
                     upcaseStrong = True
                     break
 
-            if line.startswith('strong'):
+            elif line.startswith('strong'):
                 strong = True
         return upcaseStrong
 
