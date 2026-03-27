@@ -1,7 +1,7 @@
 [![Download the latest release](docs/img/download-button.png)](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v5.0.4.pyz)
 [![Changelog](docs/img/changelog-button.png)](docs/changelog.md)
 [![News/Feedback](docs/img/news-button.png)](https://github.com/peter88213/novelibre/discussions)
-[![Online help](docs/img/help-button.png)](https://peter88213.github.io/nv_epub/help/)
+[![Online help](docs/img/help-button.png)](https://peter88213.github.io/nvhelp-en/nv_epub/)
 
 
 # ![EPUB](icons/nv_epub.png) nv_epub
@@ -64,7 +64,7 @@ The package is also available in zip format: [nv_epub_v5.0.4.zip](https://github
 
 ## Usage
 
-See the [online manual](https://peter88213.github.io/nv_epub/help/)
+See the [online manual](https://peter88213.github.io/nvhelp-en/nv_epub/)
 
 ---
 
