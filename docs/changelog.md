@@ -5,6 +5,14 @@
 ## Changelog
 
 
+### Version 5.0.4
+
+- Changed the help URL, providing German help as well.
+
+API: 5.53
+Based on novelibre 5.54.2
+
+
 ### Version 5.0.3
 
 - Optimized the stylesheet.

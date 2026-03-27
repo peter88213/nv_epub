@@ -1,4 +1,4 @@
-[![Download the latest release](docs/img/download-button.png)](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v5.0.3.pyz)
+[![Download the latest release](docs/img/download-button.png)](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v5.0.4.pyz)
 [![Changelog](docs/img/changelog-button.png)](docs/changelog.md)
 [![News/Feedback](docs/img/news-button.png)](https://github.com/peter88213/novelibre/discussions)
 [![Online help](docs/img/help-button.png)](https://peter88213.github.io/nv_epub/help/)
@@ -34,10 +34,10 @@ The [novelibre](https://github.com/peter88213/novelibre/) Python program helps a
 
 ### Default: Executable Python zip archive
 
-Download the latest release [nv_epub_v5.0.3.pyz](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v5.0.3.pyz)
+Download the latest release [nv_epub_v5.0.4.pyz](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v5.0.4.pyz)
 
-- Launch *nv_epub_v5.0.3.pyz* by double-clicking (Windows desktop),
-- or execute `python nv_epub_v5.0.3.pyz` (Windows), resp. `python3 nv_epub_v5.0.3.pyz` (Linux) on the command line.
+- Launch *nv_epub_v5.0.4.pyz* by double-clicking (Windows desktop),
+- or execute `python nv_epub_v5.0.4.pyz` (Windows), resp. `python3 nv_epub_v5.0.4.pyz` (Linux) on the command line.
 
 > [!IMPORTANT]
 > Many web browsers recognize the download as an executable file and offer to open it immediately. 
@@ -52,9 +52,9 @@ Download the latest release [nv_epub_v5.0.3.pyz](https://github.com/peter88213/n
 
 ### Alternative: Zip file
 
-The package is also available in zip format: [nv_epub_v5.0.3.zip](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v5.0.3.zip)
+The package is also available in zip format: [nv_epub_v5.0.4.zip](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v5.0.4.zip)
 
-- Extract the *nv_epub_v5.0.3* folder from the downloaded zipfile "nv_epub_v5.0.3.zip".
+- Extract the *nv_epub_v5.0.4* folder from the downloaded zipfile "nv_epub_v5.0.4.zip".
 - Move into this new folder and launch *setup.py* by double-clicking (Windows/Linux desktop), 
 - or execute `python setup.py` (Windows), resp. `python3 setup.py` (Linux) on the command line.
 
