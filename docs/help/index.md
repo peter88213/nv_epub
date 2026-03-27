@@ -1,11 +1,11 @@
-[Project homepage](https|//github.com/peter88213/nv_epub) > [Index](../) > User guide
+[Project homepage](https://github.com/peter88213/nv_epub) > [Index](../) > User guide
 
 ------------------------------------------------------------------------
 
 #  User guide
 
 This page refers to the latest
-[nv_epub](https|//github.com/peter88213/nv_epub/) release. You can
+[nv_epub](https://github.com/peter88213/nv_epub/) release. You can
 open it with **Help \> nv_epub Online help**.
 
 
