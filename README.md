@@ -34,7 +34,7 @@ The [novelibre](https://github.com/peter88213/novelibre/) Python program helps a
 
 ### Default: Executable Python zip archive
 
-Download the latest release [nv_epub_v5.0.4.pyz](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v5.0.4.pyz)
+Download the latest release [nv_epub_v5.0.4.pyz](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v5.0.4.pyz) (24 KB)
 
 - Launch *nv_epub_v5.0.4.pyz* by double-clicking (Windows desktop),
 - or execute `python nv_epub_v5.0.4.pyz` (Windows), resp. `python3 nv_epub_v5.0.4.pyz` (Linux) on the command line.
@@ -52,7 +52,7 @@ Download the latest release [nv_epub_v5.0.4.pyz](https://github.com/peter88213/n
 
 ### Alternative: Zip file
 
-The package is also available in zip format: [nv_epub_v5.0.4.zip](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v5.0.4.zip)
+The package is also available in zip format: [nv_epub_v5.0.4.zip](https://github.com/peter88213/nv_epub/raw/main/dist/nv_epub_v5.0.4.zip) (24 KB)
 
 - Extract the *nv_epub_v5.0.4* folder from the downloaded zipfile "nv_epub_v5.0.4.zip".
 - Move into this new folder and launch *setup.py* by double-clicking (Windows/Linux desktop), 
