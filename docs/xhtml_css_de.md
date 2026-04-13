@@ -1,4 +1,4 @@
-[Project home page](../) > XHTML/CSS documentation
+[Projekt-Homepage](../) > XHTML/CSS-Dokumentation
 
 ------------------------------------------------------------------------
 
