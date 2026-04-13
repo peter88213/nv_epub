@@ -9,7 +9,7 @@
 | **h1**                  | **Überschrift 1**                      | Teileüberschrift.                                      |
 | **h2**                  | **Überschrift 2**                      | Kapitelüberschrift.                                    |
 | **h4**                  | **Überschrift 4**                      | Abschnittstrenner.                                     |
-| **p**                   | **Standard**                           | (Nicht explizit angeandt)                              |
+| **p**                   | **Standard**                           | (Nicht explizit angewandt)                             |
 | **p.title**             | **Titel**                              | Romantitel.                                            |
 | **p.author**            | **Untertitel**                         | Autor.                                                 |
 | **p.epigraph**          | **Motto**                              | Motto.                                                 |
