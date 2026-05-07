@@ -5,6 +5,14 @@
 ## Changelog
 
 
+### Version 5.0.5
+
+- Checking the DTD version supported by novelibre.
+
+API: 5.53
+Based on novelibre 5.55.16
+
+
 ### Version 5.0.4
 
 - Changed the help URL, providing German help as well.

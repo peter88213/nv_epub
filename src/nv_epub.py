@@ -36,6 +36,10 @@ class Plugin(PluginBase):
 
     FEATURE = f"EPUB {_('e-book')}"
 
+    DTD_MAJOR_VERSION = 1
+    DTD_MINOR_VERSION = 10
+    # DTD version supported by the plugin.
+
     def install(self, model, view, controller):
         """Install the plugin.
         
@@ -46,6 +50,20 @@ class Plugin(PluginBase):
 
         Extends the superclass method.
         """
+        # Raise an exception if the plugin is not compatible
+        # with the DTD supported by novelibre.
+        (
+            novelibreDtdMajorVersion,
+            novelibreDtdMinorVersion
+        ) = model.nvService.get_novx_dtd_version()
+        if (
+            novelibreDtdMajorVersion != self.DTD_MAJOR_VERSION or
+            novelibreDtdMinorVersion > self.DTD_MINOR_VERSION
+        ):
+            raise RuntimeError(
+                'Outdated: Current novx file version not supported.'
+            )
+
         super().install(model, view, controller)
         self._icon = self._get_icon('nv_epub.png')
 
