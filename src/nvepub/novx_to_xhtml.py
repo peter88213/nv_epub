@@ -19,7 +19,6 @@ class NovxToXhtml(sax.ContentHandler):
         self._list = None
         self._note = None
         self._skipElement = None
-        self._quotations = None
         self._firstParagraphInChapter = None
 
     def feed(
@@ -45,7 +44,6 @@ class NovxToXhtml(sax.ContentHandler):
         self._isEpigraph = isEpigraph
         self._upcaseStrong = upcaseStrong
         self.pageIndex = pageIndex
-        self._quotations = False
         self._list = False
         self._note = False
         self._upcase = False
@@ -70,7 +68,7 @@ class NovxToXhtml(sax.ContentHandler):
             self._noteLines.append(content)
         else:
             self.xhtmlLines.append(content)
-            self._indentParagraph = not self._quotations
+            self._indentParagraph = True
 
     def endElement(self, name):
         """Signals the end of an element in non-namespace mode.
@@ -97,7 +95,6 @@ class NovxToXhtml(sax.ContentHandler):
                 return
 
             lines.append('&nbsp;</p>\n')
-            self._quotations = False
             return
 
         if name in ('em', 'strong', 'span'):
@@ -164,10 +161,6 @@ class NovxToXhtml(sax.ContentHandler):
 
             elif self._isEpigraph:
                 lines.append(f'<p class="epigraph"{lang}>')
-            elif xmlAttributes.get('style', None) == 'quotations':
-                lines.append(f'<p class="quotations"{lang}>')
-                self._quotations = True
-                self._indentParagraph = False
             elif self._firstParagraphInChapter:
                 lines.append(f'<p class="chapter_beginning"{lang}>')
             elif self._indentParagraph:
