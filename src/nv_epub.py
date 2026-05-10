@@ -37,7 +37,7 @@ class Plugin(PluginBase):
     FEATURE = f"EPUB {_('e-book')}"
 
     DTD_MAJOR_VERSION = 1
-    DTD_MINOR_VERSION = 10
+    DTD_MINOR_VERSION = 11
     # DTD version supported by the plugin.
 
     def install(self, model, view, controller):

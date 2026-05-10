@@ -112,7 +112,7 @@ p.first_line_indent
     {
     text-indent:1.5em;
     }
-p.quotations
+p.custom_4
     {
     text-indent:0em;
     margin-left:2.5em;

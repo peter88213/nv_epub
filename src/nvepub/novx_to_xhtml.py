@@ -117,7 +117,7 @@ class NovxToXhtml(sax.ContentHandler):
             self._note = False
             return
 
-        if name in ('h5', 'h6', 'h7', 'h8', 'h9',):
+        if name in ('h4', 'h5', 'h6', 'h7', 'h8', 'h9',):
             self.xhtmlLines.append('</p>\n')
             self._indentParagraph = False
             return
@@ -204,7 +204,7 @@ class NovxToXhtml(sax.ContentHandler):
             self._note = True
             return
 
-        if name in ('h5', 'h6', 'h7', 'h8', 'h9',):
+        if name in ('h4', 'h5', 'h6', 'h7', 'h8', 'h9',):
             level = name[-1]
             lines.append(
                 f'<p class="custom_{level}{lang}">'
