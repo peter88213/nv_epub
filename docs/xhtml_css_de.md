@@ -17,7 +17,7 @@
 | **p.chapter_beginning** | **Kapitelanfang**                      | Erster Absatz im Kapitel.                              |
 | **p.text_body**         | **Textkörper**                         | Erster Absatz im Abschnitt, falls nicht Kapitelanfang. |
 | **p.first_line_indent** | **Textkörper Einzug**                  | Normaler Absatz.                                       |
-| **p.quotations**        | **Zitat**                              | Absatz, der sich visuell vom Textkörper unterscheidet. |
+| **p.custom_4**          | **Zitat**                              | Absatz, der sich visuell vom Textkörper unterscheidet. |
 | **p.custom_5**          | **Überschrift 5**                      | Absatz, der sich visuell vom Textkörper unterscheidet. |
 | **p.custom_6**          | **Überschrift 6**                      | Absatz, der sich visuell vom Textkörper unterscheidet. |
 | **p.custom_7**          | **Überschrift 7**                      | Absatz, der sich visuell vom Textkörper unterscheidet. |

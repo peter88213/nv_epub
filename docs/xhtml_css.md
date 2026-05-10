@@ -17,7 +17,7 @@
 | **p.chapter_beginning** | **Chapter beginning**                           | Chapter's first paragraph.                             |
 | **p.text_body**         | **Text body**                                   | Section's first paragraph, if not beginning a chapter. |
 | **p.first_line_indent** | **First line indent**                           | Regular paragraph.                                     |
-| **p.quotations**        | **Quotations** (OO) / **Block Quotations** (LO) | Paragraph visually distinguished from the body text.   |
+| **p.custom_4**          | **Quotations** (OO) / **Block Quotations** (LO) | Paragraph visually distinguished from the body text.   |
 | **p.custom_5**          | **Heading 5**                                   | Paragraph visually distinguished from the body text.   |
 | **p.custom_6**          | **Heading 6**                                   | Paragraph visually distinguished from the body text.   |
 | **p.custom_7**          | **Heading 7**                                   | Paragraph visually distinguished from the body text.   |
