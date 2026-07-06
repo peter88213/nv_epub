@@ -1,7 +1,7 @@
 """Provide an Epub mixin class for the EPUB table of contents representation.
 
 Copyright (c) Peter Triesberger
-For further information see https://github.com/peter88213/
+For further information see https://github.com/peter88213/nv_epub
 License: GNU GPLv3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
 """
 from string import Template
