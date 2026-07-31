@@ -41,7 +41,7 @@ class Plugin(PluginBase):
     # DTD version supported by the plugin.
 
     def install(self, model, view, controller):
-        """Install the plugin.
+        """Install the plugin at runtime.
         
         Positional arguments:
             model -- reference to the novelibre main model instance.
@@ -69,7 +69,7 @@ class Plugin(PluginBase):
 
         #--- Configure the main menu.
 
-        # Add an entry to the "Export" menu.
+        # Add an entry to the Export menu.
         pos = self._ui.exportMenu.index(_('Options'))
         self._ui.exportMenu.insert_separator(pos)
         label = self.FEATURE
