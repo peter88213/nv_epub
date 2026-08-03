@@ -15,24 +15,19 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 """
-import os
-import re
-import webbrowser
-
 from nvepub.nvepub_locale import _
 # this should be the first import
-from nvepub.epub import Epub
+
+from nvepub.epub_exporter import EpubExporter
 from nvlib.controller.plugin.plugin_base import PluginBase
-from nvlib.novx_globals import norm_path
 
 
 class Plugin(PluginBase):
     """Template plugin class."""
     VERSION = '@release'
-    API_VERSION = '5.53'
+    API_VERSION = '5.63'
     DESCRIPTION = 'EPUB e-book exporter'
     URL = 'https://github.com/peter88213/nv_epub'
-    HELP_URL = _('https://peter88213.github.io/nvhelp-en/nv_epub/')
 
     FEATURE = f"EPUB {_('e-book')}"
 
@@ -67,7 +62,15 @@ class Plugin(PluginBase):
         super().install(model, view, controller)
         self._icon = self._get_icon('nv_epub.png')
 
-        #--- Configure the main menu.
+        self.exporter = EpubExporter(model, view, controller)
+
+        #--- Configure the user interface.
+
+        def run():
+            self.exporter.run(self.FEATURE, self.VERSION)
+
+        def open_help():
+            self._ctrl.helpService.open_help_page('nv_epub')
 
         # Add an entry to the Export menu.
         pos = self._ui.exportMenu.index(_('Options'))
@@ -78,76 +81,16 @@ class Plugin(PluginBase):
             label=label,
             image=self._icon,
             compound='left',
-            command=self._export_epub,
+            command=run,
         )
         self._ui.exportMenu.disableOnClose.append(label)
 
         # Add an entry to the Help menu.
-        label = _('EPUB export plugin Online help')
+        label = _('EPUB export plugin help')
         self._ui.helpMenu.add_command(
             label=label,
             image=self._icon,
             compound='left',
-            command=self.open_help,
+            command=open_help,
         )
-
-    def _export_epub(self):
-
-        def sanitize_path(pathStr):
-            return re.sub(r'[\/\\\?\*:\|"><]', '_', pathStr)
-
-        if self._mdl.prjFile is None:
-            return False
-
-        if self._mdl.prjFile.filePath is None:
-            return False
-
-        self._ui.restore_status()
-        self._ui.propertiesView.apply_changes()
-        if self._mdl.isModified:
-            if not self._ui.ask_yes_no(
-                message=_('Save changes?'),
-                detail=f"{_('There are unsaved changes')}.",
-                title=self.FEATURE,
-            ):
-                self._ui.set_status(f'#{_("Action canceled by user")}.')
-                return False
-
-            self._ctrl.save_project()
-
-        authorName = self._mdl.novel.authorName
-        if not authorName:
-            authorName = _('Unknown')
-        fileNameHead = sanitize_path(
-            f'{self._mdl.novel.title} - {authorName}'
-        )
-        fileName = f'{fileNameHead}{Epub.EXTENSION}'
-        prjDir = os.path.dirname(self._mdl.prjFile.filePath)
-        epubPath = os.path.join(prjDir, fileName)
-        if os.path.isfile(epubPath):
-            if not self._ui.ask_yes_no(
-                message=_('Overwrite existing e-book?'),
-                detail=norm_path(epubPath),
-                title=self.FEATURE,
-            ):
-                self._ui.set_status(f'#{_("Action canceled by user")}.')
-                return False
-
-        epubFile = Epub(
-            epubPath,
-            version=self.VERSION,
-            prjDir=os.path.dirname(self._mdl.prjFile.filePath),
-        )
-        epubFile.novel = self._mdl.novel
-        try:
-            epubFile.write()
-        except Exception as ex:
-            self._ui.set_status(f'!{str(ex)}')
-            return False
-
-        self._ui.set_status(f'{_("File exported")}: {epubPath}')
-        return True
-
-    def open_help(self):
-        webbrowser.open(self.HELP_URL)
 
