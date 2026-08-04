@@ -3,9 +3,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 5.0.5\n"
+"Project-Id-Version: 5.1.0\n"
 "POT-Creation-Date: 2026-03-15 16:18:14\n"
-"PO-Revision-Date: 2026-05-07 17:42:47\n"
+"PO-Revision-Date: 2026-08-04 11:19:15\n"
 "Last-Translator: Peter Triesberger\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -100,6 +100,3 @@ msgstr "Weltenbau"
 
 msgid "e-book"
 msgstr "E-Book"
-
-msgid "https://peter88213.github.io/nvhelp-en/nv_epub/"
-msgstr "https://peter88213.github.io/nvhelp-de/nv_epub/"
