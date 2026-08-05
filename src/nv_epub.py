@@ -23,11 +23,12 @@ from nvlib.controller.plugin.plugin_base import PluginBase
 
 
 class Plugin(PluginBase):
-    """Template plugin class."""
+    """EPUB exporter plugin class."""
     VERSION = '@release'
     API_VERSION = '5.63'
     DESCRIPTION = 'EPUB e-book exporter'
     URL = 'https://github.com/peter88213/nv_epub'
+    HELP_PAGE = 'nv_epub'
 
     FEATURE = f"EPUB {_('e-book')}"
 
@@ -69,9 +70,6 @@ class Plugin(PluginBase):
         def run():
             self.exporter.run(self.FEATURE, self.VERSION)
 
-        def open_help():
-            self._ctrl.helpService.open_help_page('nv_epub')
-
         # Add an entry to the Export menu.
         pos = self._ui.exportMenu.index(_('Options'))
         self._ui.exportMenu.insert_separator(pos)
@@ -85,12 +83,5 @@ class Plugin(PluginBase):
         )
         self._ui.exportMenu.disableOnClose.append(label)
 
-        # Add an entry to the Help menu.
-        label = _('EPUB export plugin help')
-        self._ui.helpMenu.add_command(
-            label=label,
-            image=self._icon,
-            compound='left',
-            command=open_help,
-        )
+        self._add_help_menu_entry(_('EPUB export plugin help'))
 
