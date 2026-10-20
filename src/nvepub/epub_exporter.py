@@ -1,4 +1,4 @@
-"""Provide an EPUP exporter service class for novelibre.
+"""Provide an EPUB exporter service class for novelibre.
 
 Copyright (c) Peter Triesberger
 For further information see https://github.com/peter88213/
