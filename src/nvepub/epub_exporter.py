@@ -1,6 +1,6 @@
 """Provide an EPUB exporter service class for novelibre.
 
-Copyright (c) Peter Triesberger
+Copyright (c) 2026 Peter Triesberger
 For further information see https://github.com/peter88213/
 License: GNU GPLv3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
 """
